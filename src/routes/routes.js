@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Modelos a utilizar
-const curso = require('../models/curso')
+const curso = require('../model/curso')
 //const session = require('../models/sesion')
 //const clase = require('../models/clase')
 //const alumno = require('../models/alumno')
@@ -30,9 +30,6 @@ router.get('/cursos/:id', async (req,res) => {
         }
     });
 });
-
-
-
 
 // Exporta el router para ser utilizado en controlador
 module.exports = router;

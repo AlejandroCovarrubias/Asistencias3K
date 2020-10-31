@@ -1,0 +1,171 @@
+/* App */
+.app3000 {
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+/* Menu superior */
+.menu {
+    width: 100%;
+    float: left;
+}
+
+.left {
+    float: left;
+    width: 75%;
+}
+
+.right {
+    float: left;
+    width: 25%;
+}
+
+.menu .generic-button {
+    margin: 5px;
+}
+
+.right .generic-button {
+    float: right;
+}
+
+/* Menú de filtros*/
+.filter-options {
+
+}
+
+.dropCursos {
+    height: 50px;
+    margin: 5px;
+    width: 310px;
+}
+
+/* Dialogo de Cursos */
+
+.dialog-container {
+    height: 750px;
+    display: grid;
+}
+
+.cursos-form {
+    width: 100%;
+    height: 600px;
+    float: left;
+}
+
+.cursos-left {
+    float: left;
+    width: 49%;
+    height: 100%;
+    margin-right: 1%;
+}
+
+.cursos-right {
+    float: left;
+    width: 49%;
+    height: 100%;
+    margin-left: 1%;
+    background-color: gray;
+}
+
+.cursos-submit {
+    text-align: right;
+    height: 60px;
+}
+
+.cursos-submit .generic-button {
+    margin: 10px;
+    margin-right: 0px;
+}
+
+.cursos-nombre{
+    height: 60px;
+}
+
+.cursos-nombre input {
+    height: 50px;
+    width: 100%;
+}
+
+.cursos-secciones{
+    height: 270px;
+}
+
+.cursos-secciones-encabezado{
+    width:100%;
+    float: left;
+    height: 10%;
+}
+
+.cursos-secciones-left {
+    width: 70%;
+    float: left;
+}
+
+.cursos-secciones-right {
+    width: 30%;
+    float: left;
+}
+
+.cursos-secciones-right .MuiSvgIcon-root {
+    float: right;
+}
+
+.cursos-secciones-contenido{
+    width: 100%;
+    float: left;
+    height: 90%;
+}
+
+.cursos-clases{
+    height: 270px;
+}
+
+.cursos-clases-encabezado{
+    width:100%;
+    float: left;
+    height: 10%;
+}
+
+.cursos-clases-left {
+    width: 70%;
+    float: left;
+}
+
+.cursos-clases-right {
+    width: 30%;
+    float: left;
+}
+
+.cursos-clases-right .MuiSvgIcon-root {
+    float: right;
+}
+
+.cursos-clases-contenido{
+    width: 100%;
+    float: left;
+    height: 90%;
+}
+
+/* Botones */
+.generic-button {
+    height: 50px;
+    width: 150px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+/* Lineas de separacion*/
+.encabezado hr {
+    height: 1px;
+    background-color: black;
+}
+
+.encabezado-dialog hr {
+    height: 1px;
+    background-color: black;
+}
+
+/* Tablas */
+.MuiDataGrid-root .MuiDataGrid-colCellWrapper {
+    background-color: #dcdcdc;
+}
