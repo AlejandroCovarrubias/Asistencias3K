@@ -14,7 +14,8 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/MancillasMiguel/asistencias3k#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.10.11"
   },
   "devDependencies": {
     "mocha": "^8.2.0",
