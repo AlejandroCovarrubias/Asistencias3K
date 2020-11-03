@@ -3,7 +3,7 @@ import './style/App.css';
 import DialogCursos from './view/DialogCursos.js';
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       listaCursos: [
@@ -22,7 +22,7 @@ class App extends React.Component {
           secciones: [],
           clases: [],
         },
-        
+
       ],
       isOpenDialogCursos: false,
     };
@@ -31,27 +31,26 @@ class App extends React.Component {
     this.handleClosingDialog = this.handleClosingDialog.bind(this);
   }
 
-  doOptions = function(x) {
+  doOptions = function (x) {
     return <option key={x.nombre}>{x.nombre}</option>
   };
 
-  abrirDialogoCursos(){
-      this.setState({
-        isOpenDialogCursos: true,
-      });
+  abrirDialogoCursos() {
+    this.setState({
+      isOpenDialogCursos: true,
+    });
   }
 
   handleClosingDialog() {
-    this.setState({isOpenDialogCursos: false})
+    this.setState({ isOpenDialogCursos: false })
   }
 
-
-  render(){
+  render() {
     return (
       <div className="app3000">
         <header className="encabezado">
           <h2>Manejador de Asistencias 3000</h2>
-          <hr/>
+          <hr />
         </header>
 
         <div className="menu">
@@ -72,8 +71,7 @@ class App extends React.Component {
             <button className="generic-button">BUSQUEDA FILTRADA</button>
           </div>
         </div>
-
-        <DialogCursos open={this.state.isOpenDialogCursos} closeAction={this.handleClosingDialog} taskName={'Registrar Curso'}/>
+        <DialogCursos open={this.state.isOpenDialogCursos} closeAction={this.handleClosingDialog} taskName={'Registrar Curso'} />
       </div>
     );
   }

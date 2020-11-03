@@ -4,6 +4,8 @@ import './style/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+console.log(React.version)
+
 ReactDOM.render(
   <App />,
   document.getElementById('root')

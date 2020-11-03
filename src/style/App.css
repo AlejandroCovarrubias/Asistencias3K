@@ -64,7 +64,6 @@
     width: 49%;
     height: 100%;
     margin-left: 1%;
-    background-color: gray;
 }
 
 .cursos-submit {
@@ -84,17 +83,21 @@
 .cursos-nombre input {
     height: 50px;
     width: 100%;
+    border: solid 0px;
+    font-size: 18px;
+    padding-left: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+}
+
+.cursos-nombre input[type="text"]:focus {
+    outline: solid 2px #dcdcdc;
 }
 
 .cursos-secciones{
     height: 270px;
+    padding-top: 10px;
 }
 
-.cursos-secciones-encabezado{
-    width:100%;
-    float: left;
-    height: 10%;
-}
 
 .cursos-secciones-left {
     width: 70%;
@@ -106,10 +109,6 @@
     float: left;
 }
 
-.cursos-secciones-right .MuiSvgIcon-root {
-    float: right;
-}
-
 .cursos-secciones-contenido{
     width: 100%;
     float: left;
@@ -118,12 +117,7 @@
 
 .cursos-clases{
     height: 270px;
-}
-
-.cursos-clases-encabezado{
-    width:100%;
-    float: left;
-    height: 10%;
+    padding-top: 70px;
 }
 
 .cursos-clases-left {
@@ -134,10 +128,6 @@
 .cursos-clases-right {
     width: 30%;
     float: left;
-}
-
-.cursos-clases-right .MuiSvgIcon-root {
-    float: right;
 }
 
 .cursos-clases-contenido{
@@ -166,6 +156,3 @@
 }
 
 /* Tablas */
-.MuiDataGrid-root .MuiDataGrid-colCellWrapper {
-    background-color: #dcdcdc;
-}

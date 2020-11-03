@@ -1,8 +1,18 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const cursoEsquema = new mongoose.Schema({
-    idS: String,
-    nombre: String
-});
+class Curso {
+    constructor(nombre){
+        this.nombre = nombre;
+        this.secciones = Array[];
+        this.clases = Array[];
+    }
+}
 
-module.exports = mongoose.model('cursos',cursoEsquema);
+//const mongoose = require('mongoose')
+//
+//const cursoEsquema = new mongoose.Schema({
+//    idS: String,
+//    nombre: String
+//});
+//
+//module.exports = mongoose.model('cursos',cursoEsquema);
