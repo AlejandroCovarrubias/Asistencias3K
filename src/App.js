@@ -1,6 +1,7 @@
 import React from 'react';
 import './style/App.css';
 import DialogCursos from './view/DialogCursos.js';
+import ModalArchivo from './view/ModalArchivo.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -25,9 +26,11 @@ class App extends React.Component {
 
       ],
       isOpenDialogCursos: false,
+      isOpenModalArchivos: false,
     };
 
     this.abrirDialogoCursos = this.abrirDialogoCursos.bind(this);
+    this.abrirModalArchivos = this.abrirModalArchivos.bind(this);
     this.handleClosingDialog = this.handleClosingDialog.bind(this);
   }
 
@@ -41,8 +44,17 @@ class App extends React.Component {
     });
   }
 
+  abrirModalArchivos(){
+    this.setState({
+      isOpenModalArchivos: true,
+    });
+  }
+
   handleClosingDialog() {
-    this.setState({ isOpenDialogCursos: false })
+    this.setState({ 
+      isOpenDialogCursos: false,
+      isOpenModalArchivos: false, 
+    })
   }
 
   render() {
@@ -59,7 +71,7 @@ class App extends React.Component {
             <button className="generic-button">VER CURSOS</button>
           </div>
           <div className="right">
-            <button className="generic-button">SUBIR ARCHIVO DE ASISTENCIAS</button>
+            <button className="generic-button" onClick={this.abrirModalArchivos}>SUBIR ARCHIVO DE ASISTENCIAS</button>
           </div>
         </div>
 
@@ -72,6 +84,7 @@ class App extends React.Component {
           </div>
         </div>
         <DialogCursos open={this.state.isOpenDialogCursos} closeAction={this.handleClosingDialog} taskName={'Registrar Curso'} />
+        <ModalArchivo open={this.state.isOpenModalArchivos} closeAction={this.handleClosingDialog} />
       </div>
     );
   }
