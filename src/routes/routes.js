@@ -46,7 +46,7 @@ router.post('/cursos', async (req, res) => {
     //console.log(req.body);
     var e = new curso(req.body);
     await curso.insertMany(e);
-    res.redirect('/');
+    res.redirect('/cursos');
 });
 
 // PUT
@@ -56,10 +56,14 @@ router.put('/cursos/:id', async(req,res)=>{
     const update = { idUsuario: req.body.idUsuario , idCurso: req.body.idCurso, nombre: req.body.nombre, 
                      secciones: req.body.secciones, clases: req.body.clases}
     await curso.findOneAndUpdate(filter, update)
-    res.redirect('/');
+    res.redirect('/cursos');
 })
 
-
+router.delete('/cursos/:id', async(req,res)=>{
+    const id = req.params.id;
+    await curso.findOneAndDelete( {idCurso: id})
+    res.redirect('/cursos')
+})
 
 
 
