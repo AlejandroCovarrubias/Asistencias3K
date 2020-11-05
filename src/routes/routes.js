@@ -31,7 +31,7 @@ router.get('/cursos', async (req, res) => {
 //GET especifico
 router.get('/cursos/:id', async (req,res) => {
     const id = req.params.id;
-    const cursoE = await curso.findOne({ idS:id}, function(err, docs){
+    const cursoE = await curso.findOne({ idCurso:id}, function(err, docs){
         if (err){
             console.log(err)
             res.send("Error! No se encontro ese ID.")
@@ -52,8 +52,11 @@ router.post('/cursos', async (req, res) => {
 // PUT
 router.put('/cursos/:id', async(req,res)=>{
     const id = req.params.id;
-    console.log(id)
-    console.log(req.body)
+    const filter = { idCurso: id}
+    const update = { idUsuario: req.body.idUsuario , idCurso: req.body.idCurso, nombre: req.body.nombre, 
+                     secciones: req.body.secciones, clases: req.body.clases}
+    await curso.findOneAndUpdate(filter, update)
+    res.redirect('/');
 })
 
 
