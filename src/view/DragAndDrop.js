@@ -31,13 +31,37 @@ export default class DragAndDrop extends React.Component {
     }
 
     handleDrop = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        this.setState({ drag: false })
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            this.props.handleDrop(e.dataTransfer.files)
-            e.dataTransfer.clearData()
-            this.dragCounter = 0
+        const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
+        const { type } = e.dataTransfer.files[0];
+
+        console.log(type);
+        if (supportedFilesTypes.indexOf(type) > -1) {
+            //Lee el archivo
+            const reader = new FileReader();
+            reader.readAsDataURL(e.dataTransfer.files[0])
+
+            const payload = new FormData();
+            payload.append('file', e.dataTransfer.files[0]);
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('POST', 'http://localhost:8080/uploadFile');
+            xhr.send(payload);
+
+            e.preventDefault()
+            e.stopPropagation()
+            this.setState({ drag: false })
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                this.props.handleDrop(e.dataTransfer.files)
+                e.dataTransfer.clearData()
+                this.dragCounter = 0
+            }
+        } else {
+            //Hacer que te de el mensaje
+            alert('No es del tipo indicado')
+            e.preventDefault()
+            e.stopPropagation()
+            this.setState({ drag: false })
         }
     }
 

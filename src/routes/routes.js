@@ -5,14 +5,18 @@ const cors = require('cors');
 const fs = require('fs');
 const folder = 'files/';
 
+
 // CORS configurations
 router.use(cors());
 
 // Modelos a utilizar
-const curso = require('../model/curso')
-//const session = require('../models/sesion')
-//const clase = require('../models/clase')
-//const alumno = require('../models/alumno')
+const alumno = require('../models/curso')
+const alumnoClase = require('../models/alumnoClase')
+const asistenciaSesion = require('../models/asistenciaSesion')
+const clase = require('../models/clase')
+const curso = require('../models/curso')
+const seccion = require('../models/seccion')
+const usuario = require('../models/usuario')
 
 // REST
 
@@ -38,6 +42,28 @@ router.get('/cursos/:id', async (req,res) => {
     });
 });
 
+// POST
+router.post('/cursos', async (req, res) => {
+    console.log(req.body);
+    var e = new curso(req.body);
+    await curso.insertMany(e);
+    res.redirect('/');
+    //Respondeles bien we
+});
+
+// PUT
+router.put('/cursos/:id', async(req,res)=>{
+    const id = req.params.id;
+    console.log(id)
+    console.log(req.body)
+})
+
+
+
+
+
+
+//--------------
 //POST file
 router.post('/uploadFile', (req, res) => {
     //inicializar multiparty
@@ -64,6 +90,9 @@ router.post('/uploadFile', (req, res) => {
         });
     });
 });
+
+
+
 
 // Exporta el router para ser utilizado en controlador
 module.exports = router;
