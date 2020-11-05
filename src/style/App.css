@@ -1,0 +1,218 @@
+/* App */
+
+.app3000 {
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+/* Menu superior */
+
+.menu {
+    width: 100%;
+    float: left;
+}
+
+.left {
+    float: left;
+    width: 75%;
+}
+
+.right {
+    float: left;
+    width: 25%;
+}
+
+.menu .generic-button {
+    margin: 5px;
+}
+
+.right .generic-button {
+    float: right;
+}
+
+/* Menú de filtros*/
+
+.filter-options {}
+
+.dropCursos {
+    height: 50px;
+    margin: 5px;
+    width: 310px;
+}
+
+/* Dialogo de Cursos */
+
+.dialog-container {
+    height: 750px;
+    display: grid;
+}
+
+.cursos-form {
+    width: 100%;
+    height: 600px;
+    float: left;
+}
+
+.cursos-left {
+    float: left;
+    width: 49%;
+    height: 100%;
+    margin-right: 1%;
+}
+
+.cursos-right {
+    float: left;
+    width: 49%;
+    height: 100%;
+    margin-left: 1%;
+}
+
+.cursos-submit {
+    text-align: right;
+    height: 60px;
+}
+
+.cursos-submit .generic-button {
+    margin: 10px;
+    margin-right: 0px;
+}
+
+.cursos-nombre {
+    height: 60px;
+}
+
+.cursos-nombre input {
+    height: 50px;
+    width: 100%;
+    border: solid 0px;
+    font-size: 18px;
+    padding-left: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
+
+.cursos-nombre input[type="text"]:focus {
+    outline: solid 2px #dcdcdc;
+}
+
+.cursos-secciones {
+    height: 270px;
+    padding-top: 10px;
+}
+
+.cursos-secciones-left {
+    width: 70%;
+    float: left;
+}
+
+.cursos-secciones-right {
+    width: 30%;
+    float: left;
+}
+
+.cursos-secciones-contenido {
+    width: 100%;
+    float: left;
+    height: 90%;
+}
+
+.cursos-clases {
+    height: 270px;
+    padding-top: 70px;
+}
+
+.cursos-clases-left {
+    width: 70%;
+    float: left;
+}
+
+.cursos-clases-right {
+    width: 30%;
+    float: left;
+}
+
+.cursos-clases-contenido {
+    width: 100%;
+    float: left;
+    height: 90%;
+}
+
+/* Modal para subir archivos */
+
+.modal-container {
+    height: auto;
+}
+
+.drop {
+    height: 30px;
+    width: 200px;
+    margin: 5px;
+    font-size: 10px;
+}
+
+.archivo-submit {
+    text-align: right;
+    height: 60px;
+}
+
+.archivo-submit .generic-button {
+    margin: 10px;
+    margin-right: 0px;
+}
+
+.drag-area {
+    display: inline-block;
+    position: relative;
+    width: calc(100% - 20px);
+    height: 150px;
+    border: .5px;
+    border-radius: 5px;
+    border-style: dashed;
+    padding: 10px;
+}
+
+.drag-area-dragged {
+    background-color: 'rgba(255,255,255,.8)'; 
+    position: 'absolute'; top: 0;
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    z-index: 9999;
+}
+
+.drag-area-dragged-top{
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    text-align: center;
+    color: gray;
+    font-size: 24px;
+}
+
+.drag-tool{
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+/* Botones */
+
+.generic-button {
+    height: 50px;
+    width: 150px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+/* Lineas de separacion*/
+
+.encabezado hr {
+    height: 1px;
+    background-color: black;
+}
+
+.encabezado-dialog hr {
+    height: 1px;
+    background-color: black;
+}
+
+/* Tablas */
