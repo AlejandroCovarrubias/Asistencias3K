@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-
+//app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Conectarse a la base de datos.
 mongoose.connect('mongodb://localhost/MA3K')
