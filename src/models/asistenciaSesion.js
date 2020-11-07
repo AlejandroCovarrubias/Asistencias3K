@@ -2,9 +2,8 @@ const mongoose = require('mongoose')
 
 const asistenciaSesionEsquema = new mongoose.Schema({
     fechaSesion: String,
-    idSesion: Number,
-    idClase: Number,
-    idSeccion: Number,
+    idClase: String,
+    idSeccion: String,
     asistentes: { type : Array , "default" : [] }
 });
 

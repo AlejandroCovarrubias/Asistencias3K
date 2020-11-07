@@ -90,13 +90,6 @@ export default class ModalArchivo extends React.Component {
 
     //Maneja los archivos
     handleDrop = (files) => {
-        const supportedFilesTypes = ['text/csv'];
-        const {type} = files[0];
-
-        if(supportedFilesTypes.indexOf(type) > -1){
-            
-        }
-
         let fileList = this.state.files
         fileList = []
 
