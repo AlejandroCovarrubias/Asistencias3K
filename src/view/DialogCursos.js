@@ -15,54 +15,42 @@ export default class DialogCursos extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            nombre: "",
+            secciones: [],
+            clases: [],
+
             sectionCols: [
                 { field: 'nombre', title: 'Sección', width: 300 },
-            ],
-
-            sectionRows: [
-                { id: 1, nombre: 'Unidad 1' },
-                { id: 2, nombre: 'Unidad 2' },
-                { id: 3, nombre: 'Unidad 3' },
-                { id: 4, nombre: 'Unidad 4' },
             ],
 
             classCols: [
                 { field: 'nombre', title: 'Clase', width: 300 },
             ],
-
-            classRows: [
-                { id: 1, nombre: 'Clase 1' },
-                { id: 2, nombre: 'Clase 2' },
-                { id: 3, nombre: 'Clase 3' },
-                { id: 4, nombre: 'Clase 4' },
-            ],
-            isOpenDialogSecciones: false,
         };
 
-        this.handleAddSection = this.handleAddSection.bind(this);
-        this.handleClosingDialogSection = this.handleClosingDialogSection.bind(this);
-        this.handleConcatSection = this.handleConcatSection.bind(this);
-        this.handleAddClass = this.handleAddClass.bind(this);
+        this.handleClasesChange = this.handleClasesChange.bind(this);
+        this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
-    handleAddSection() {
+    onSubmit(event){
+        event.preventDefault();
+        var cursoE = document.getElementById('cursoNombre').value
+        console.log(cursoE);
+        console.log(this.state.clases);
+        console.log(this.state.secciones);
+    }
+
+    handleClasesChange(clasesData){
         this.setState({
-          isOpenDialogSecciones: true,
+            clases: clasesData,
         });
-      }
+    }
     
-    handleClosingDialogSection() {
-        this.setState({ isOpenDialogCursos: false })
-    }
-
-    handleConcatSection(section) {
+    handleSeccionesChange(seccionesData){
         this.setState({
-            sectionRows: [...this.state.sectionRows, section]
-        })
-    }
-
-    handleAddClass() {
-        //Abrir Cuadro de Dialogo
+            secciones: seccionesData,
+        });
     }
 
     render() {
@@ -86,24 +74,36 @@ export default class DialogCursos extends React.Component {
                             <div className="cursos-form">
                                 <div className="cursos-left">
                                     <div className="cursos-nombre">
-                                        <input type="text" placeholder="Nombre del curso"></input>
+                                        <input 
+                                        type="text" 
+                                        placeholder="Nombre del curso" 
+                                        id="cursoNombre"
+                                        ></input>
                                     </div>
                                     <div className="cursos-secciones">
                                         <div className="cursos-secciones-contenido">
-                                            <EditableTable title="Secciones del curso" rows={this.state.sectionRows} cols={this.state.sectionCols} />
+                                            <EditableTable 
+                                                title="Secciones del curso" 
+                                                rows={this.state.secciones} 
+                                                cols={this.state.sectionCols}
+                                                handleChange={ this.handleSeccionesChange } />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="cursos-right">
                                     <div className="cursos-clases">
                                         <div className="cursos-clases-contenido">
-                                            <EditableTable title="Clases del curso" rows={this.state.classRows} cols={this.state.classCols} />
+                                            <EditableTable 
+                                                title="Clases del curso" 
+                                                rows={this.state.clases} 
+                                                cols={this.state.classCols} 
+                                                handleChange={ this.handleClasesChange } />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="cursos-submit">
-                                <button className="generic-button">REGISTRAR CURSO</button>
+                                <button className="generic-button" onClick={this.onSubmit}>REGISTRAR CURSO</button>
                                 <button className="generic-button" onClick={this.props.closeAction}>CANCELAR</button>
                             </div>
                         </div>

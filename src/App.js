@@ -2,36 +2,50 @@ import React from 'react';
 import './style/App.css';
 import DialogCursos from './view/DialogCursos.js';
 import ModalArchivo from './view/ModalArchivo.js';
+import DialogAlert from './view/DialogAlert.js';
+
+const DEFAULTURL = 'http://localhost:8080';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      listaCursos: [
-        {
-          nombre: 'METODOLOGIAS AGILES DE DESARROLLO',
-          secciones: [],
-          clases: [],
-        },
-        {
-          nombre: 'ARQUITECTURAS EMPRESARIALES',
-          secciones: [],
-          clases: [],
-        },
-        {
-          nombre: 'DISEÑIO DE SOFTWARE',
-          secciones: [],
-          clases: [],
-        },
-
-      ],
+      curso: {},
+      listaCursos: [],
       isOpenDialogCursos: false,
       isOpenModalArchivos: false,
+      isOpenAlert: false,
+      tituloAlerta: "",
+      mensajeAlerta: "",
     };
 
     this.abrirDialogoCursos = this.abrirDialogoCursos.bind(this);
     this.abrirModalArchivos = this.abrirModalArchivos.bind(this);
+    this.abrirAlert = this.abrirAlert.bind(this);
     this.handleClosingDialog = this.handleClosingDialog.bind(this);
+    this.handleClosingAlert = this.handleClosingAlert.bind(this);
+  }
+
+  componentDidMount(){
+    this.fetchCursos();
+  }
+
+  fetchCursos(){
+    //buscar por id de usuario, cuando haya usuarios
+    fetch(DEFAULTURL + '/cursos', {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+    })
+    .then(
+      response => response.json())
+    .then(
+      data => this.setState({listaCursos: data}))
+    .catch(
+      error => this.abrirAlert("Conexión Rechazada","La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página."));
   }
 
   doOptions = function (x) {
@@ -50,11 +64,27 @@ class App extends React.Component {
     });
   }
 
+  abrirAlert(titulo, mensaje){
+    this.setState({
+      tituloAlerta: titulo,
+      mensajeAlerta: mensaje,
+      isOpenAlert: true,
+    });
+  }
+
   handleClosingDialog() {
     this.setState({ 
       isOpenDialogCursos: false,
-      isOpenModalArchivos: false, 
-    })
+      isOpenModalArchivos: false,
+    });
+  }
+
+  handleClosingAlert(){
+    this.setState({
+      isOpenAlert: false,
+    });
+
+    this.fetchCursos();
   }
 
   render() {
@@ -83,8 +113,18 @@ class App extends React.Component {
             <button className="generic-button">BUSQUEDA FILTRADA</button>
           </div>
         </div>
-        <DialogCursos open={this.state.isOpenDialogCursos} closeAction={this.handleClosingDialog} taskName={'Registrar Curso'} />
-        <ModalArchivo open={this.state.isOpenModalArchivos} closeAction={this.handleClosingDialog} />
+        <DialogCursos 
+          open={this.state.isOpenDialogCursos} 
+          closeAction={this.handleClosingDialog} 
+          taskName={'Registrar Curso'} />
+        <ModalArchivo 
+          open={this.state.isOpenModalArchivos} 
+          closeAction={this.handleClosingDialog} />
+        <DialogAlert 
+          open={this.state.isOpenAlert} 
+          closeAction={this.handleClosingAlert}
+          titulo={this.state.tituloAlerta} 
+          mensaje={this.state.mensajeAlerta}/>
       </div>
     );
   }
