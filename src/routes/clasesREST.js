@@ -15,50 +15,58 @@ const mongoose = require('mongoose');
 
 //POST
 router.post('/clases/:id', async (req, res) => {
-    var e = new clase(req.body);
-    // Asegura que el ID curso se asigne por la ruta mejor
-    e.idCurso = req.params.id;
+    var arregloFinal = [];
 
     // Consigue el ID mas reciente
-    const x = await clase.find();
-    e.id = utlidades.siguienteID(x)
-    
+    const y = await clase.find();
+    var IDmas = +0;
+    var IDinicial = utlidades.siguienteID(y)
 
+    for (var key in req.body) {
+        if (req.body.hasOwnProperty(key)) {
+            var e = new clase(req.body[key]);
+            e.idCurso = req.params.id;
+            e.id = +IDinicial + +IDmas;
+            IDmas = +IDmas + 1;
+            arregloFinal.push(e)
+        }
+    }
+
+    // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
     // Enlaza a curso
     const id = req.params.id;
-    const filter = {id:id}
+    const filter = { id: id }
 
-    // Primero intenta agregar por curso, por si no existe
     await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se pudo encontrar el Curso de la seccion");
-        }else{
+        } else{
             if(docs){
-                // Guarda referencia
                 const cursoE = docs;
-
-                cursoE.clases.push(e);
+                arregloFinal.forEach( x => {
+                    cursoE.clases.push(x);
+                })
                 console.log(cursoE);
                 const update = { clases: cursoE.clases };
-
+                
                 curso.findOneAndUpdate(filter, update, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
                         res.status(404).send("Error! No se encontró un curso con esa ID");
                     } else {
-                        // Ahora si agregalas
-                        clase.insertMany(e);
-                        res.status(200).send("Clase agregada correctamente.");
+                        // Guarda la seccion en si
+                        console.log("ARREGLO")
+                        console.log(arregloFinal)
+                        clase.insertMany(arregloFinal);
+                        res.status(200).send("Actualizado el curso con la clase agregada.");
                     }
                 });
-            }else{
-                res.status(404).send("Error! No se pudo encontrar el Curso de la seccion");
+            } else {
+                res.status(404).send("No se encontró un curso con ese ID");
             }
         }
     });
-
-    
 });
 
 // GET

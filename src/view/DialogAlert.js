@@ -21,7 +21,7 @@ export default class DialogAlert extends React.Component {
                 </div>
             </DialogContent>
             <DialogActions>
-                <button className="generic-button" onClick={this.props.closeAction}>RECARGAR PÁGINA</button>
+                <button className="generic-button" onClick={this.props.closeAction}>ACEPTAR</button>
             </DialogActions>
           </Dialog>
         </div>

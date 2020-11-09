@@ -77,6 +77,8 @@ class App extends React.Component {
       isOpenDialogCursos: false,
       isOpenModalArchivos: false,
     });
+    
+    this.fetchCursos();
   }
 
   handleClosingAlert(){
