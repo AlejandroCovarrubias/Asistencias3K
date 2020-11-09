@@ -69,14 +69,16 @@ router.put('/cursos/:id', async (req, res) => {
     const update = {
         nombre: req.body.nombre
     };
-
-    
         await curso.findOneAndUpdate(filter, update, function (err, docs) {
             if (err) {
                 //Si la base de datos está desconectada...
                 res.status(404).send("Error! No se pudo acceder a los cursos");
             } else {
-                res.status(200).send("Curso actualizado exitosamente");
+                if(docs){
+                    res.status(200).send("Curso actualizado exitosamente");
+                }else{
+                    res.status(404).send("Error! No se pudo encontrar el curso con ese ID.");
+                }
             }
         });
 })
@@ -98,15 +100,35 @@ router.delete('/cursos/:id', async (req, res) => {
                 // Elimina secciones relevantes
                 // Itera por secciones
                 cursoE.secciones.forEach(element => {
-                    seccion.findOneAndDelete({id:element.id})
-                    console.log("Eliminado seccion con ID: "+element.id)
+                    seccion.findOneAndDelete({id:element.id}, function(err,docs){
+                        if(err){
+                            console.log("Error al eliminar seccion con ID: "+element.id)
+                        }else{
+                            if(docs){
+                                console.log("Eliminado seccion con ID: "+element.id)
+                            }else{
+                            console.log("Error al eliminar seccion con ID: "+element.id+" No existe?")
+                            }
+                        }
+                    })
+                    
                 });
 
                 // Elimina clases relevantes
                 // Itera por clases
                 cursoE.clases.forEach(element =>  {
-                    clase.findOneAndDelete({id:element.id})
-                    console.log("Eliminado clase con ID: "+element.id)
+                    clase.findOneAndDelete({id:element.id}, function(err,docs){
+                        if(err){
+                            console.log("Error al eliminar clase con ID: "+element.id)
+                        }else{
+                            if(docs){
+                                console.log("Eliminado clase con ID: "+element.id)
+                            }else{
+                            console.log("Error al eliminar clase con ID: "+element.id+" No existe?")
+                            }
+                        }
+                    })
+                    
                 });
 
                 // Elimina el curso en si
