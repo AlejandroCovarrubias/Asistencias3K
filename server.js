@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
 
 const app = express();
 

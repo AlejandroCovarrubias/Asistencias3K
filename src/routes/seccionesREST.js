@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+var utlidades = require("../utilidades");
+
 
 // Modelos a utilizar
 const curso = require('../models/curso');
@@ -12,125 +14,202 @@ const mongoose = require('mongoose');
 
 //NO necesitamos un GET para todas las secciones, deberiamos removerlo
 // GET todos
-router.get('/secciones', async (req, res) => {
-    await seccion.find(function (err, docs) {
+//router.get('/secciones', async (req, res) => {
+//    await seccion.find(function (err, docs) {
+//        if (err) {
+//            //Si la base de datos está desconectada...
+//            res.status(404).send("Error! No se pudo acceder a las secciones");
+//        } else {
+//            res.status(200).send(docs);
+//        }
+//    });
+//});
+
+//GET especifico
+router.get('/secciones/:id', async (req, res) => {
+    const id = req.params.id;
+
+    await seccion.findOne({ id:id }, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se pudo acceder a las secciones");
         } else {
-            res.status(200).send(docs);
+            //Revisa si es algo xD Como odio javascript
+            if (docs) {
+                res.status(200).send(docs);
+            } else {
+                res.status(404).send("No se encontró una seccion con ese ID");
+            }
         }
     });
-});
-
-//GET especifico
-router.get('/secciones/:id', async (req, res) => {
-    const _id = req.params.id;
-
-    if (mongoose.isValidObjectId(_id)) {
-        await seccion.findById({ _id }, function (err, docs) {
-            if (err) {
-                //Si la base de datos está desconectada...
-                res.status(404).send("Error! No se pudo acceder a las secciones");
-            } else {
-                //Revisa si es algo xD Como odio javascript
-                if (docs) {
-                    res.status(200).send(docs);
-                } else {
-                    res.status(404).send("No se encontró una seccion con ese ID");
-                }
-            }
-        });
-    } else {
-        res.status(404).send("Error! ID no válido. No se pudo obtener la seccion");
-    }
 });
 
 // POST
 router.post('/secciones/:id', async (req, res) => {
     var e = new seccion(req.body);
-    await seccion.insertMany(e);
+    // Asegura que el ID curso se asigne por la ruta mejor
+    e.idCurso = req.params.id;
 
+    // Consigue el ID mas reciente
+    const x = await seccion.find();
+    e.id = utlidades.siguienteID(x)
+
+    // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
     // Enlaza a curso
-    const _id = req.params.id;
-    const filter = _id
+    const id = req.params.id;
+    const filter = {id:id}
 
-    await curso.findById(filter, function (err, docs) {
+    await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se pudo encontrar el Curso de la seccion");
-        } else {
-            if (docs) {
-                var cursoE = docs;
+        } else{
+            if(docs){
+                const cursoE = docs;
                 cursoE.secciones.push(e);
                 console.log(cursoE);
                 const update = { secciones: cursoE.secciones };
-
-                curso.findByIdAndUpdate(filter, update, function (err, docs) {
+                
+                curso.findOneAndUpdate(filter, update, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
                         res.status(404).send("Error! No se encontró un curso con esa ID");
                     } else {
-                        res.status(200);
+                        // Guarda la seccion en si
+                        seccion.insertMany(e);
+                        res.status(200).send("Actualizado el curso con la seccion agregada.");
                     }
                 });
+            } else {
+                res.status(404).send("No se encontró un curso con ese ID");
             }
         }
     });
+
+    
 });
 
 // PUT
 router.put('/secciones/:id', async (req, res) => {
     const id = req.params.id;
-    const filter = { idSeccion: id }
+    const filter = {id:id}
     const update = { nombre: req.body.nombre }
 
-    const seccionE = await seccion.findOne(filter)
+    await seccion.findOneAndUpdate(filter, update, function (err, docs) {
+        if (err) {
+            //Si la base de datos está desconectada...
+            res.status(404).send("Error! No se encontró una seccion con esa ID");
+        }else{
+            if(docs){
+                // Guarda la referencia
+                const seccionE = docs;
+                // Actualiza el curso
+                curso.findOne({id:seccionE.idCurso}, function(err,docs){
+                    if (err) {
+                        //Si la base de datos está desconectada...
+                        res.status(404).send("Error! No se encontró el curso de esta seccion");
+                    }else{
+                        if(docs){
+                            // Guarda la referencia
+                            const cursoE = docs;
+                            // Busca la seccion a modificar dentro del curso
+                            const index = cursoE.secciones.findIndex((el) => el.id == id);
 
-    await seccion.findOneAndUpdate(filter, update)
+                            // Por si las dudas checa que lo encuentra
+                            if (index !== -1) {
+                                // Modifica
+                                cursoE.secciones[index].nombre = req.body.nombre
 
-    // Actualiza el curso
+                                 curso.findOneAndUpdate({id:seccionE.idCurso}, { secciones: cursoE.secciones }, function (err, docs) {
+                                    if (err) {
+                                        //Si la base de datos está desconectada...
+                                        res.status(404).send("Error! No se encontró una seccion con esa ID");
+                                    } else {
+                                        res.status(200).send("Actualizada la seccion correctamente.");
+                                    }})
+                            }
+                        }else{
+                            res.status(404).send("Error! No se encontró el curso de esta seccion");
+                        }
+                    }
+                })
+                
 
-    const cursoE = await curso.findOne({ idCurso: seccionE.idCurso })
-    // Busca la seccion a modificar dentro del curso
-    const index = cursoE.secciones.findIndex((el) => el.idSeccion === id);
+            } else {
+                res.status(404).send("No se encontró una sesion con ese ID");
+            }
+        }
+        })
 
-    // Por si las dudas checa que lo encuentra
-    if (index !== -1) {
-        // Modifica
-        cursoE.secciones[index].nombre = req.body.nombre
-
-        await curso.findOneAndUpdate({ idCurso: seccionE.idCurso }, { secciones: cursoE.secciones })
-    } else {
-        console.log("No encontre chavo")
-    }
-    res.redirect('/secciones');
+    
 })
+
+// DELETE
 
 router.delete('/secciones/:id', async (req, res) => {
     const id = req.params.id;
-    const filter = { idSeccion: id }
-    const seccionE = await seccion.findOne(filter)
+    const filter = {id:id}
+    await seccion.findOne(filter, function (err, docs) {
+        if (err) {
+            //Si la base de datos está desconectada...
+            res.status(404).send("Error! No se pudo encontrar una seccion con ese ID");
+        }else{
+            if(docs){
+                // Guarda la referencia
+                const seccionE = docs;
 
-    // Elimina de curso
+                // Elimina de curso
+                curso.findOne({id:seccionE.idCurso}, function(err,docs){
+                    if (err) {
+                    //Si la base de datos está desconectada...
+                    res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+                }else{
+                    if(docs){
+                        // Guarda la referencia
+                        const cursoE = docs;
+                        // Busca la seccion a eliminar dentro del curso
+                        const index = cursoE.secciones.findIndex((el) => el.id == id);
+                        // Por si las dudas checa que lo encuentra
+                        if (index !== -1) {
+                            // Elimina
+                            cursoE.secciones.splice(index, 1)
+                            curso.findOneAndUpdate({id:seccionE.idCurso}, { secciones: cursoE.secciones }, function(err,docs){
+                                if(err){
+                                    res.status(404).send("No se pudo eliminar la seccion del curso")
+                                }else{
+                                    if(docs){
+                                        console.log("Eliminado compa")
+                                    }else{
+                                        res.status(404).send("No se pudo eliminar la seccion del curso x 2")
+                                    }
+                                }
+                            })
+                        }
+                        // Elimina la seccion en si
 
-    const cursoE = await curso.findOne({ idCurso: seccionE.idCurso })
+                        seccion.findOneAndDelete(filter, function (err, docs) {
+                            if (err) {
+                                //Si la base de datos está desconectada...
+                                res.status(404).send("Error! No se encontró una seccion con esa ID");
+                            } else {
+                                res.status(200).send("Seccion eliminada correctamente");
+                            }})
+                        } else {
+                                res.status(404).send("No se encontró una seccion con ese ID");
+                                return;
+                            }
+                    }})
+                    } else {
+                        res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+                    }
+                }
+                
+            })
 
-    // Busca la seccion a eliminar dentro del curso
-    const index = cursoE.secciones.findIndex((el) => el.idSeccion === id);
+                
 
-    // Por si las dudas checa que lo encuentra
-    if (index !== -1) {
-        // Elimina
-        cursoE.secciones.splice(index, 1)
+    
 
-        await curso.findOneAndUpdate({ idCurso: seccionE.idCurso }, { secciones: cursoE.secciones })
-    }
-    // Elimina la seccion en si
-
-    await seccion.findOneAndDelete(filter)
-
-    res.redirect('/secciones')
 })
 
 // Exporta el router para ser utilizado en controlador

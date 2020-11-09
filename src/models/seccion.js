@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const seccionEsquema = new mongoose.Schema({
+    id: String,
     idCurso: String,
     nombre: String
 });
