@@ -46,18 +46,27 @@ router.get('/secciones/:id', async (req, res) => {
 
 // POST
 router.post('/secciones/:id', async (req, res) => {
-    var e = new seccion(req.body);
-    // Asegura que el ID curso se asigne por la ruta mejor
-    e.idCurso = req.params.id;
+    var arregloFinal = [];
 
     // Consigue el ID mas reciente
-    const x = await seccion.find();
-    e.id = utlidades.siguienteID(x)
+    const y = await seccion.find();
+    var IDmas = +0;
+    var IDinicial = utlidades.siguienteID(y)
+
+    for (var key in req.body) {
+        if (req.body.hasOwnProperty(key)) {
+            var e = new seccion(req.body[key]);
+            e.idCurso = req.params.id;
+            e.id = +IDinicial + +IDmas;
+            IDmas = +IDmas + 1;
+            arregloFinal.push(e)
+        }
+    }
 
     // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
     // Enlaza a curso
     const id = req.params.id;
-    const filter = {id:id}
+    const filter = { id: id }
 
     await curso.findOne(filter, function (err, docs) {
         if (err) {
@@ -66,7 +75,9 @@ router.post('/secciones/:id', async (req, res) => {
         } else{
             if(docs){
                 const cursoE = docs;
-                cursoE.secciones.push(e);
+                arregloFinal.forEach( x => {
+                    cursoE.secciones.push(x);
+                })
                 console.log(cursoE);
                 const update = { secciones: cursoE.secciones };
                 
@@ -76,7 +87,9 @@ router.post('/secciones/:id', async (req, res) => {
                         res.status(404).send("Error! No se encontró un curso con esa ID");
                     } else {
                         // Guarda la seccion en si
-                        seccion.insertMany(e);
+                        console.log("ARREGLO")
+                        console.log(arregloFinal)
+                        seccion.insertMany(arregloFinal);
                         res.status(200).send("Actualizado el curso con la seccion agregada.");
                     }
                 });
@@ -85,8 +98,6 @@ router.post('/secciones/:id', async (req, res) => {
             }
         }
     });
-
-    
 });
 
 // PUT
