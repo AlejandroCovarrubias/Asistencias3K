@@ -105,7 +105,7 @@ export default class DialogCursos extends React.Component {
         })
             .then(response => {
                 if (response.status === 200) {
-                    this.useState({
+                    this.setState({
                         exito: true,
                     });
                     this.abrirAlert("Curso registrado exitosamente", "");
@@ -114,7 +114,7 @@ export default class DialogCursos extends React.Component {
                 }
             })
             .catch(
-                error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente."));
+                error => console.log(error));
     }
 
     render() {
