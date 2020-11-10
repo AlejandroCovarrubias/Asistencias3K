@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 
 // Clases
 
+// POST
 //POST
 router.post('/clases/:id', async (req, res) => {
     var arregloFinal = [];

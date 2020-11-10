@@ -11,7 +11,13 @@ class App extends React.Component {
     super(props);
     this.state = {
       curso: {},
-      listaCursos: [],
+      listaCursos: [
+        {
+            nombre: '',
+            secciones: [],
+            clases: [],
+        },
+      ],
       isOpenDialogCursos: false,
       isOpenModalArchivos: false,
       isOpenAlert: false,
@@ -121,7 +127,8 @@ class App extends React.Component {
           taskName={'Registrar Curso'} />
         <ModalArchivo 
           open={this.state.isOpenModalArchivos} 
-          closeAction={this.handleClosingDialog} />
+          closeAction={this.handleClosingDialog}
+          lista={this.state.listaCursos} />
         <DialogAlert 
           open={this.state.isOpenAlert} 
           closeAction={this.handleClosingAlert}

@@ -16,42 +16,6 @@ export default class ModalArchivo extends React.Component {
         super(props);
 
         this.state = {
-            listaCursos: [
-                {
-                    nombre: 'METODOLOGIAS AGILES DE DESARROLLO',
-                    secciones: [
-                        { nombre: 'UNIDAD 1' },
-                        { nombre: 'UNIDAD 2' },
-                        { nombre: 'UNIDAD 3' }],
-                    clases: [
-                        { nombre: 'CLASE 10AM' },
-                        { nombre: 'CLASE 11AM' },
-                        { nombre: 'CLASE 12AM' }],
-                },
-                {
-                    nombre: 'ARQUITECTURAS EMPRESARIALES',
-                    secciones: [
-                        { nombre: 'SECCIÓN 1' },
-                        { nombre: 'SECCIÓN 2' },
-                        { nombre: 'SECCIÓN 3' }],
-                    clases: [
-                        { nombre: 'CLASE 3PM' },
-                        { nombre: 'CLASE 4PM' },
-                        { nombre: 'CLASE 5PM' }],
-                },
-                {
-                    nombre: 'DISEÑIO DE SOFTWARE',
-                    secciones: [
-                        { nombre: 'PARCIAL 1' },
-                        { nombre: 'PARCIAL 2' },
-                        { nombre: 'PARCIAL 3' }],
-                    clases: [
-                        { nombre: 'CLASE 15:30' },
-                        { nombre: 'CLASE 17:00' },
-                        { nombre: 'CLASE 20:00' }],
-                },
-
-            ],
             indexEscogido: 0,
             isOpenDialogCursos: false,
             isOpenModalArchivos: false,
@@ -60,19 +24,6 @@ export default class ModalArchivo extends React.Component {
         this.handleCursosChange = this.handleCursosChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
     }
-
-    //Para obtener data de una API
-    //componentDidMount () {
-    //    fetch("http://localhost/dashboard/?action=unassignedUsers.getUnassingedUsers", {
-    //        credentials: 'same-origin'
-    //    })
-    //    .then(response => response.json())
-    //    .then( (json) => {
-    //        this.setState({
-    //            data: json
-    //        });
-    //    });
-    //}
 
     doOptions = function (x) {
         return <option key={x.nombre}>{x.nombre}</option>
@@ -84,8 +35,6 @@ export default class ModalArchivo extends React.Component {
         this.setState({
             indexEscogido: selectedIndex,
         });
-
-        console.log(this.state.listaCursos[this.state.indexEscogido]);
     };
 
     //Maneja los archivos
@@ -136,13 +85,13 @@ export default class ModalArchivo extends React.Component {
                                         id="cursos"
 
                                         onChange={this.handleCursosChange}>
-                                        {this.state.listaCursos.map(this.doOptions)}
+                                        {this.props.lista.map(this.doOptions)}
                                     </select>
                                     <select className="drop" name="clases" id="clases" >
-                                        {this.state.listaCursos[this.state.indexEscogido].clases.map(this.doOptions)}
+                                        {this.props.lista[this.state.indexEscogido].clases.map(this.doOptions)}
                                     </select>
                                     <select className="drop" name="secciones" id="secciones" >
-                                        {this.state.listaCursos[this.state.indexEscogido].secciones.map(this.doOptions)}
+                                        {this.props.lista[this.state.indexEscogido].secciones.map(this.doOptions)}
                                     </select>
                                 </div>
                             </div>

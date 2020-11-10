@@ -30,7 +30,7 @@ export default class DialogCursos extends React.Component {
                 { field: 'nombre', title: 'Clase', width: 300 },
             ],
             isOpenAlert: false,
-            isOpenAlertExito: false,
+            exito: false,
             tituloAlerta: "",
             mensajeAlerta: "",
         };
@@ -38,18 +38,12 @@ export default class DialogCursos extends React.Component {
         this.handleClasesChange = this.handleClasesChange.bind(this);
         this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
-        this.handleClosingAlertExito = this.handleClosingAlertExito(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
     onSubmit(event) {
         event.preventDefault();
         var cursoE = document.getElementById('cursoNombre').value
-
-        console.log(cursoE);
-        console.log(this.state.clases);
-        console.log(this.state.secciones);
-
         this.postCurso(cursoE)
     }
 
@@ -73,29 +67,16 @@ export default class DialogCursos extends React.Component {
         });
     }
 
-    abrirAlertExito(titulo, mensaje) {
-        this.setState({
-            tituloAlerta: titulo,
-            mensajeAlerta: mensaje,
-            isOpenAlertExito: true,
-        });
-    }
-
     handleClosingAlert() {
-        this.setState({
-            isOpenAlert: false,
-        });
-    }
-
-    handleClosingAlertExito() {
-        this.setState({
-            isOpenAlertExito: false,
-            nombre: "",
-            secciones: [],
-            clases: [],
-        });
-
-        this.props.closeAction();
+        if (this.state.exito) {
+            console.log("Hey, fui un exito");
+            window.location.reload(false);
+        } else {
+            this.setState({
+                exito: false,
+                isOpenAlert: false,
+            });
+        }
     }
 
     postCurso(nombreCurso) {
@@ -169,12 +150,13 @@ export default class DialogCursos extends React.Component {
                 },
                 body: JSON.stringify(this.state.clases),
             })
-                .then(
-                    this.abrirAlertExito("Curso registrado con exito")
-                )
                 .catch(
                     error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada."));
         }
+        this.setState({
+            exito: true,
+        });
+        this.abrirAlert("Curso registrado exitosamente", "");
     }
 
     render() {
@@ -235,11 +217,6 @@ export default class DialogCursos extends React.Component {
                     <DialogAlert
                         open={this.state.isOpenAlert}
                         closeAction={this.handleClosingAlert}
-                        titulo={this.state.tituloAlerta}
-                        mensaje={this.state.mensajeAlerta} />
-                    <DialogAlert
-                        open={this.state.isOpenAlertExito}
-                        closeAction={this.handleClosingAlertExito}
                         titulo={this.state.tituloAlerta}
                         mensaje={this.state.mensajeAlerta} />
                 </Dialog>
