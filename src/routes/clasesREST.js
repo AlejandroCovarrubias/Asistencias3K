@@ -41,7 +41,7 @@ router.post('/clases/:id', async (req, res) => {
     await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo encontrar el Curso de la seccion");
+            res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
         } else{
             if(docs){
                 const cursoE = docs;
@@ -54,7 +54,7 @@ router.post('/clases/:id', async (req, res) => {
                 curso.findOneAndUpdate(filter, update, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
-                        res.status(404).send("Error! No se encontró un curso con esa ID");
+                        res.status(503).send("Error! No se encontró un curso con esa ID");
                     } else {
                         // Guarda la seccion en si
                         console.log("ARREGLO")
@@ -78,7 +78,7 @@ router.get('/clases/:id', async (req, res) => {
        await clase.findOne( filter , function (err, docs) {
            if (err) {
                //Si la base de datos está desconectada...
-               res.status(404).send("Error! No se pudo acceder a las clases");
+               res.status(503).send("Error! No se pudo acceder a las clases");
            } else {
                if (docs) {
                    res.status(200).send(docs);
@@ -98,7 +98,7 @@ router.put('/clases/:id', async (req, res) => {
     await clase.findOneAndUpdate(filter, update, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se encontró una clase con esa ID");
+            res.status(503).send("Error! No se encontró una clase con esa ID");
         }else{
             if(docs){
                 // Guarda la referencia
@@ -107,7 +107,7 @@ router.put('/clases/:id', async (req, res) => {
                 curso.findOne({id:claseE.idCurso}, function(err,docs){
                     if (err) {
                         //Si la base de datos está desconectada...
-                        res.status(404).send("Error! No se encontró el curso de esta clase");
+                        res.status(503).send("Error! No se encontró el curso de esta clase");
                     }else{
                         if(docs){
                             // Guarda la referencia
@@ -123,7 +123,7 @@ router.put('/clases/:id', async (req, res) => {
                                  curso.findOneAndUpdate({id:claseE.idCurso}, { clases: cursoE.clases }, function (err, docs) {
                                     if (err) {
                                         //Si la base de datos está desconectada...
-                                        res.status(404).send("No se pudo actualizar el curso a donde pertenece la clase.");
+                                        res.status(503).send("No se pudo actualizar el curso a donde pertenece la clase.");
                                     } else {
                                         res.status(200).send("Actualizada la clase correctamente.");
                                     }})
@@ -151,7 +151,7 @@ router.delete('/clases/:id', async (req, res) => {
     await clase.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo encontrar una clase con ese ID");
+            res.status(503).send("Error! No se pudo encontrar una clase con ese ID");
         }else{
             if(docs){
                 // Guarda la referencia
@@ -161,7 +161,7 @@ router.delete('/clases/:id', async (req, res) => {
                 curso.findOne({id:claseE.idCurso}, function(err,docs){
                     if (err) {
                     //Si la base de datos está desconectada...
-                    res.status(404).send("Error! No se encontró un curso con la ID en la clase");
+                    res.status(503).send("Error! No se encontró un curso con la ID en la clase");
                 }else{
                     if(docs){
                         // Guarda la referencia
@@ -174,7 +174,7 @@ router.delete('/clases/:id', async (req, res) => {
                             cursoE.clases.splice(index, 1)
                             curso.findOneAndUpdate({id:claseE.idCurso}, { clases: cursoE.clases }, function(err,docs){
                                 if(err){
-                                    res.status(404).send("No se pudo eliminar la clase del curso")
+                                    res.status(503).send("No se pudo eliminar la clase del curso")
                                 }else{
                                     if(docs){
                                         console.log("Eliminado compa")
@@ -189,7 +189,7 @@ router.delete('/clases/:id', async (req, res) => {
                         clase.findOneAndDelete(filter, function (err, docs) {
                             if (err) {
                                 //Si la base de datos está desconectada...
-                                res.status(404).send("Error! No se encontró una clase con esa ID");
+                                res.status(503).send("Error! No se encontró una clase con esa ID");
                             } else {
                                 res.status(200).send("Clase eliminada correctamente");
                             }})

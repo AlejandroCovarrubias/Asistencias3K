@@ -32,7 +32,7 @@ router.get('/secciones/:id', async (req, res) => {
     await seccion.findOne({ id: id }, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo acceder a las secciones");
+            res.status(503).send("Error! No se pudo acceder a las secciones");
         } else {
             //Revisa si es algo xD Como odio javascript
             if (docs) {
@@ -71,7 +71,7 @@ router.post('/secciones/:id', async (req, res) => {
     await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo encontrar el Curso de la seccion");
+            res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
         } else{
             if(docs){
                 const cursoE = docs;
@@ -84,7 +84,7 @@ router.post('/secciones/:id', async (req, res) => {
                 curso.findOneAndUpdate(filter, update, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
-                        res.status(404).send("Error! No se encontró un curso con esa ID");
+                        res.status(503).send("Error! No se encontró un curso con esa ID");
                     } else {
                         // Guarda la seccion en si
                         console.log("ARREGLO")
@@ -109,7 +109,7 @@ router.put('/secciones/:id', async (req, res) => {
     await seccion.findOneAndUpdate(filter, update, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se encontró una seccion con esa ID");
+            res.status(503).send("Error! No se encontró una seccion con esa ID");
         } else {
             if (docs) {
                 // Guarda la referencia
@@ -118,7 +118,7 @@ router.put('/secciones/:id', async (req, res) => {
                 curso.findOne({ id: seccionE.idCurso }, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
-                        res.status(404).send("Error! No se encontró el curso de esta seccion");
+                        res.status(503).send("Error! No se encontró el curso de esta seccion");
                     } else {
                         if (docs) {
                             // Guarda la referencia
@@ -134,7 +134,7 @@ router.put('/secciones/:id', async (req, res) => {
                                 curso.findOneAndUpdate({ id: seccionE.idCurso }, { secciones: cursoE.secciones }, function (err, docs) {
                                     if (err) {
                                         //Si la base de datos está desconectada...
-                                        res.status(404).send("Error! No se encontró una seccion con esa ID");
+                                        res.status(503).send("Error! No se encontró una seccion con esa ID");
                                     } else {
                                         res.status(200).send("Actualizada la seccion correctamente.");
                                     }
@@ -164,7 +164,7 @@ router.delete('/secciones/:id', async (req, res) => {
     await seccion.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo encontrar una seccion con ese ID");
+            res.status(503).send("Error! No se pudo encontrar una seccion con ese ID");
         } else {
             if (docs) {
                 // Guarda la referencia
@@ -174,7 +174,7 @@ router.delete('/secciones/:id', async (req, res) => {
                 curso.findOne({ id: seccionE.idCurso }, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
-                        res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+                        res.status(503).send("Error! No se encontró un curso con la ID en la seccion");
                     } else {
                         if (docs) {
                             // Guarda la referencia
@@ -187,7 +187,7 @@ router.delete('/secciones/:id', async (req, res) => {
                                 cursoE.secciones.splice(index, 1)
                                 curso.findOneAndUpdate({ id: seccionE.idCurso }, { secciones: cursoE.secciones }, function (err, docs) {
                                     if (err) {
-                                        res.status(404).send("No se pudo eliminar la seccion del curso")
+                                        res.status(503).send("No se pudo eliminar la seccion del curso")
                                     } else {
                                         if (docs) {
                                             console.log("Eliminado compa")
@@ -202,7 +202,7 @@ router.delete('/secciones/:id', async (req, res) => {
                             seccion.findOneAndDelete(filter, function (err, docs) {
                                 if (err) {
                                     //Si la base de datos está desconectada...
-                                    res.status(404).send("Error! No se encontró una seccion con esa ID");
+                                    res.status(503).send("Error! No se encontró una seccion con esa ID");
                                 } else {
                                     res.status(200).send("Seccion eliminada correctamente");
                                 }

@@ -20,7 +20,7 @@ router.get('/cursos', async (req, res) => {
     await curso.find(function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo acceder a los cursos");
+            res.status(503).send("Error! No se pudo acceder a los cursos");
         } else {
             res.status(200).send(docs);
         }
@@ -34,7 +34,7 @@ router.get('/cursos/:id', async (req, res) => {
     await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo acceder a los cursos");
+            res.status(503).send("Error! No se pudo acceder a los cursos");
         } else {
             if (docs) {
                 res.status(200).send(docs);
@@ -50,16 +50,30 @@ router.post('/cursos', async (req, res) => {
     var e = new curso(req.body);
     // Consigue el ID mas reciente
     const x = await curso.find();
-    e.id = utlidades.siguienteID(x)
 
-    await curso.insertMany(e, function (err, docs) {
-        if (err) {
-            //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo agregar el Curso");
-        } else {
-            res.status(200).send(docs);
+    // Revisa que no este repetido
+    repetido = false;
+    x.forEach(curso =>{
+        if(curso.nombre==e.nombre){
+            repetido = true;
         }
-    });
+    })
+
+    if(repetido){
+        res.status(400).send("Ya existe un curso con ese nombre.")
+    }else{
+
+        e.id = utlidades.siguienteID(x)
+
+        await curso.insertMany(e, function (err, docs) {
+            if (err) {
+                //Si la base de datos está desconectada...
+                res.status(503).send("Error! No se pudo agregar el Curso");
+            } else {
+                res.status(200).send(docs);
+            }
+        });
+    }
 });
 
 // PUT
@@ -72,7 +86,7 @@ router.put('/cursos/:id', async (req, res) => {
     await curso.findOneAndUpdate(filter, update, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo acceder a los cursos");
+            res.status(503).send("Error! No se pudo acceder a los cursos");
         } else {
             if (docs) {
                 res.status(200).send("Curso actualizado exitosamente");
@@ -90,7 +104,7 @@ router.delete('/cursos/:id', async (req, res) => {
     const cursoE = await curso.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
-            res.status(404).send("Error! No se pudo acceder a los cursos");
+            res.status(503).send("Error! No se pudo acceder a los cursos");
             return;
         } else {
             if (docs) {
@@ -134,7 +148,7 @@ router.delete('/cursos/:id', async (req, res) => {
                 // Elimina el curso en si
                 curso.findOneAndDelete(filter, function (errx, docsx) {
                     if (errx) {
-                        res.status(404).send("Error! No se pudo acceder a los cursos");
+                        res.status(503).send("Error! No se pudo acceder a los cursos");
                     } else {
                         res.status(200).send("Curso eliminado");
                     }
