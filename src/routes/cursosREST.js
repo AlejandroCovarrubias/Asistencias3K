@@ -177,7 +177,19 @@ async function postClases(doc, res, clases) {
                     } else {
                         // Guarda el curso en si
                         clase.insertMany(arregloFinal);
-                        res.status(200).send("Curso, clase y secciones agregados con éxito.");
+
+                        // Busca de nuevo el curso xd
+                        curso.findOne({id:doc.id}, function(err,docs){
+                            if(err){
+                                res.status(503).send("Error en la base de datos al guardar curso.")
+                            }else{
+                                if(docs){
+                                    res.status(200).send(docs);
+                                }else{
+                                    res.status(404).send("Hay mama, en lo que hiciste todo eso ya no existe el curso")
+                                }
+                            }
+                        })
                     }
                 });
             } else {
