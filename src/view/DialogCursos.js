@@ -98,12 +98,14 @@ export default class DialogCursos extends React.Component {
             },
             body: JSON.stringify(data),
         })
-            .then(function (response) {
-                console.log(response.status);
+            .then( response => {
+                console.log(response.status)
+                if(response.status === 200){
+                    this.postSecciones(data[0])
+                }else if(response.status === 400){
+                    this.abrirAlert("Curso repetido", "Ya existe un curso con ese nombre.")
+                }
             })
-            .then(
-                data => this.postSecciones(data[0])
-            )
             .catch(
                 error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada."));
     }

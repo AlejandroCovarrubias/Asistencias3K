@@ -52,16 +52,16 @@ router.post('/cursos', async (req, res) => {
     const x = await curso.find();
 
     // Revisa que no este repetido
-    repetido = false;
-    x.forEach(curso =>{
-        if(curso.nombre==e.nombre){
+    var repetido = false;
+    x.forEach(curso => {
+        if (curso.nombre == e.nombre) {
             repetido = true;
         }
     })
 
-    if(repetido){
+    if (repetido) {
         res.status(400).send("Ya existe un curso con ese nombre.")
-    }else{
+    } else {
 
         e.id = utlidades.siguienteID(x)
 
