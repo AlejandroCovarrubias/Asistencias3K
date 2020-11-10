@@ -5,38 +5,38 @@
     margin-right: 3em;
 }
 
-/* Menu superior */
+/* Menu */
 
 .menu {
     width: 100%;
+    overflow: hidden;
+}
+
+.dropApp{
+    display: grid;
+    color: blue;
+    font-size: 12px;
     float: left;
 }
 
-.left {
+.filter-options{
     float: left;
-    width: 75%;
 }
 
-.right {
-    float: left;
-    width: 25%;
+.filter-options .icon-button{
+    margin-left: 5px;
 }
 
-.menu .generic-button {
-    margin: 5px;
+.filter-options .generic-button{
+    margin-left: 5px;
 }
 
-.right .generic-button {
+.files{
     float: right;
 }
 
-/* Menú de filtros*/
-
-.filter-options {}
-
 .dropCursos {
     height: 50px;
-    margin: 5px;
     width: 310px;
 }
 
@@ -142,15 +142,11 @@
     height: auto;
 }
 
-.selects-options {
-    text-align: center;
-}
-
 .drop {
     height: 30px;
-    width: 165px;
+    width: 200px;
     margin: 5px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .archivo-submit {
@@ -198,6 +194,14 @@
     padding-bottom: 10px;
 }
 
+.selects-options {
+    text-align: center;
+}
+
+.selects-options .drop{
+    width: 150px;
+}
+
 /* Botones */
 
 .generic-button {
@@ -205,6 +209,13 @@
     width: 150px;
     font-weight: 700;
     font-size: 12px;
+}
+
+.icon-button {
+    height: 50px;
+    width: 50px;
+    font-weight: 700;
+    font-size: 8px;
 }
 
 /* Lineas de separacion*/

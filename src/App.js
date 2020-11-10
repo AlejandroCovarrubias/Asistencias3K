@@ -4,6 +4,10 @@ import DialogCursos from './view/DialogCursos.js';
 import ModalArchivo from './view/ModalArchivo.js';
 import DialogAlert from './view/DialogAlert.js';
 
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+
 const DEFAULTURL = 'http://localhost:8080';
 
 class App extends React.Component {
@@ -13,9 +17,9 @@ class App extends React.Component {
       curso: {},
       listaCursos: [
         {
-            nombre: '',
-            secciones: [],
-            clases: [],
+          nombre: '',
+          secciones: [],
+          clases: [],
         },
       ],
       isOpenDialogCursos: false,
@@ -32,11 +36,11 @@ class App extends React.Component {
     this.handleClosingAlert = this.handleClosingAlert.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.fetchCursos();
   }
 
-  fetchCursos(){
+  fetchCursos() {
     //buscar por id de usuario, cuando haya usuarios
     fetch(DEFAULTURL + '/cursos', {
       method: 'GET',
@@ -46,12 +50,12 @@ class App extends React.Component {
       redirect: 'follow',
       referrerPolicy: 'no-referrer',
     })
-    .then(
-      response => response.json())
-    .then(
-      data => this.setState({listaCursos: data}))
-    .catch(
-      error => this.abrirAlert("Conexión Rechazada","La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página."));
+      .then(
+        response => response.json())
+      .then(
+        data => this.setState({ listaCursos: data }))
+      .catch(
+        error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página."));
   }
 
   doOptions = function (x) {
@@ -64,13 +68,13 @@ class App extends React.Component {
     });
   }
 
-  abrirModalArchivos(){
+  abrirModalArchivos() {
     this.setState({
       isOpenModalArchivos: true,
     });
   }
 
-  abrirAlert(titulo, mensaje){
+  abrirAlert(titulo, mensaje) {
     this.setState({
       tituloAlerta: titulo,
       mensajeAlerta: mensaje,
@@ -79,15 +83,15 @@ class App extends React.Component {
   }
 
   handleClosingDialog() {
-    this.setState({ 
+    this.setState({
       isOpenDialogCursos: false,
       isOpenModalArchivos: false,
     });
-    
+
     this.fetchCursos();
   }
 
-  handleClosingAlert(){
+  handleClosingAlert() {
     this.setState({
       isOpenAlert: false,
     });
@@ -104,36 +108,44 @@ class App extends React.Component {
         </header>
 
         <div className="menu">
-          <div className="left">
-            <button className="generic-button" onClick={this.abrirDialogoCursos}>REGISTRAR CURSO</button>
-            <button className="generic-button">VER CURSOS</button>
-          </div>
-          <div className="right">
-            <button className="generic-button" onClick={this.abrirModalArchivos}>SUBIR ARCHIVO DE ASISTENCIAS</button>
-          </div>
-        </div>
-
-        <div className="filters">
-          <div className="filter-options">
+          <div className="dropApp">
             <select className="dropCursos" name="cursos" id="cursos">
               {this.state.listaCursos.map(this.doOptions)}
             </select>
+            <a>Selecciona el curso que deseas Editar, Eliminar o Filtrar</a>
+          </div>
+          <div className="filter-options">
+            <button className="icon-button" onClick={this.abrirDialogoCursos}>
+              <AddBoxIcon />
+              Registrar
+            </button>
+            <button className="icon-button">
+              <EditIcon />
+              Editar
+            </button>
+            <button className="icon-button">
+              <DeleteForeverIcon />
+              Eliminar
+            </button>
             <button className="generic-button">BUSQUEDA FILTRADA</button>
           </div>
+          <div className="files">
+            <button className="generic-button" onClick={this.abrirModalArchivos}>SUBIR ARCHIVO DE ASISTENCIAS</button>
+          </div>
         </div>
-        <DialogCursos 
-          open={this.state.isOpenDialogCursos} 
-          closeAction={this.handleClosingDialog} 
+        <DialogCursos
+          open={this.state.isOpenDialogCursos}
+          closeAction={this.handleClosingDialog}
           taskName={'Registrar Curso'} />
-        <ModalArchivo 
-          open={this.state.isOpenModalArchivos} 
+        <ModalArchivo
+          open={this.state.isOpenModalArchivos}
           closeAction={this.handleClosingDialog}
           lista={this.state.listaCursos} />
-        <DialogAlert 
-          open={this.state.isOpenAlert} 
+        <DialogAlert
+          open={this.state.isOpenAlert}
           closeAction={this.handleClosingAlert}
-          titulo={this.state.tituloAlerta} 
-          mensaje={this.state.mensajeAlerta}/>
+          titulo={this.state.tituloAlerta}
+          mensaje={this.state.mensajeAlerta} />
       </div>
     );
   }

@@ -5,7 +5,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Slide from '@material-ui/core/Slide';
 
-import DragAndDrop from './DragAndDrop.js'
+import DragAndDrop from './DragAndDrop.js';
+import DialogAlert from './DialogAlert.js';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -19,10 +20,12 @@ export default class ModalArchivo extends React.Component {
             indexEscogido: 0,
             isOpenDialogCursos: false,
             isOpenModalArchivos: false,
+            isOpenAlert: false,
             files: [],
         };
         this.handleCursosChange = this.handleCursosChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
+        //this.handleOpenAlert = this.handleOpenAlert(this);
     }
 
     doOptions = function (x) {
@@ -48,6 +51,18 @@ export default class ModalArchivo extends React.Component {
         this.setState({ files: fileList });
     }
 
+    handleOpenAlert = () => {
+        this.setState({
+            isOpenAlert: true,
+        });
+    }
+
+    handleClosingAlert() {
+        this.setState({
+            isOpenAlert: false,
+        });
+    }
+
     render() {
         return (
             <div>
@@ -67,7 +82,9 @@ export default class ModalArchivo extends React.Component {
                                 <hr />
                             </div>
 
-                            <DragAndDrop handleDrop={this.handleDrop}>
+                            <DragAndDrop 
+                                handleDrop={this.handleDrop}
+                                handleOpenAlert={this.handleOpenAlert}>
                                 <div >
                                     <div >{this.state.files[0]}</div>
                                 </div>

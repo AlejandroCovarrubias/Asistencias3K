@@ -98,9 +98,9 @@ export default class DialogCursos extends React.Component {
             },
             body: JSON.stringify(data),
         })
-            .then(
-                response => response.json()
-            )
+            .then(function (response) {
+                console.log(response.status);
+            })
             .then(
                 data => this.postSecciones(data[0])
             )
