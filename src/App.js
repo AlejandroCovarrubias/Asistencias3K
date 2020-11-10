@@ -3,6 +3,7 @@ import './style/App.css';
 import DialogCursos from './view/DialogCursos.js';
 import ModalArchivo from './view/ModalArchivo.js';
 import DialogAlert from './view/DialogAlert.js';
+import ViewTables from './view/ViewTables.js';
 
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -27,6 +28,7 @@ class App extends React.Component {
       isOpenAlert: false,
       tituloAlerta: "",
       mensajeAlerta: "",
+      indexEscogido: 0,
     };
 
     this.abrirDialogoCursos = this.abrirDialogoCursos.bind(this);
@@ -34,6 +36,7 @@ class App extends React.Component {
     this.abrirAlert = this.abrirAlert.bind(this);
     this.handleClosingDialog = this.handleClosingDialog.bind(this);
     this.handleClosingAlert = this.handleClosingAlert.bind(this);
+    this.handleChangeCursoEscogido = this.handleChangeCursoEscogido.bind(this);
   }
 
   componentDidMount() {
@@ -99,6 +102,13 @@ class App extends React.Component {
     this.fetchCursos();
   }
 
+  handleChangeCursoEscogido = function (x) {
+    const {selectedIndex} = x.target.options;
+    this.setState({
+      indexEscogido: selectedIndex,
+    })
+  };
+
   render() {
     return (
       <div className="app3000">
@@ -109,7 +119,7 @@ class App extends React.Component {
 
         <div className="menu">
           <div className="dropApp">
-            <select className="dropCursos" name="cursos" id="cursos">
+            <select className="dropCursos" name="cursos" id="cursos" onChange={this.handleChangeCursoEscogido}>
               {this.state.listaCursos.map(this.doOptions)}
             </select>
             <a>Selecciona el curso que deseas Editar, Eliminar o Filtrar</a>
@@ -133,6 +143,12 @@ class App extends React.Component {
             <button className="generic-button" onClick={this.abrirModalArchivos}>SUBIR ARCHIVO DE ASISTENCIAS</button>
           </div>
         </div>
+
+        <div>
+          <ViewTables
+            cursoEscogido={this.state.listaCursos[this.state.indexEscogido].nombre} />
+        </div>
+        
         <DialogCursos
           open={this.state.isOpenDialogCursos}
           closeAction={this.handleClosingDialog}
@@ -145,7 +161,8 @@ class App extends React.Component {
           open={this.state.isOpenAlert}
           closeAction={this.handleClosingAlert}
           titulo={this.state.tituloAlerta}
-          mensaje={this.state.mensajeAlerta} />
+          mensaje={this.state.mensajeAlerta}
+          buttonText={"ACTUALIZAR PÁGINA"} />
       </div>
     );
   }

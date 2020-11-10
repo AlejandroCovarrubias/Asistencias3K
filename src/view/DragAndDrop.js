@@ -87,6 +87,8 @@ export default class DragAndDrop extends React.Component {
             const reader = new FileReader();
             reader.readAsDataURL(e.target.files[0])
 
+
+            //Cambiar de sitio
             const payload = new FormData();
             payload.append('file', e.target.files[0]);
 
@@ -164,7 +166,8 @@ export default class DragAndDrop extends React.Component {
                     open={this.state.isOpenAlert}
                     closeAction={this.handleClosingAlert}
                     titulo={"Formato de Archivo no permitido"}
-                    mensaje={"Formatos Permitidos: CSV"} />
+                    mensaje={"Formatos Permitidos: CSV"}
+                    buttonText={"ACEPTAR"} />
             </div>
         )
     }

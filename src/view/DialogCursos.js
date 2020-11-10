@@ -220,7 +220,8 @@ export default class DialogCursos extends React.Component {
                         open={this.state.isOpenAlert}
                         closeAction={this.handleClosingAlert}
                         titulo={this.state.tituloAlerta}
-                        mensaje={this.state.mensajeAlerta} />
+                        mensaje={this.state.mensajeAlerta}
+                        buttonText={"ACEPTAR"} />
                 </Dialog>
             </div>
         );

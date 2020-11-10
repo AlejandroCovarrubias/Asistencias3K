@@ -25,7 +25,6 @@ export default class ModalArchivo extends React.Component {
         };
         this.handleCursosChange = this.handleCursosChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
-        //this.handleOpenAlert = this.handleOpenAlert(this);
     }
 
     doOptions = function (x) {
