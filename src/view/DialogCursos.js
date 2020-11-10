@@ -33,6 +33,7 @@ export default class DialogCursos extends React.Component {
             exito: false,
             tituloAlerta: "",
             mensajeAlerta: "",
+            nuevoID: [],
         };
 
         this.handleClasesChange = this.handleClasesChange.bind(this);
@@ -44,7 +45,12 @@ export default class DialogCursos extends React.Component {
     onSubmit(event) {
         event.preventDefault();
         var cursoE = document.getElementById('cursoNombre').value
-        this.postCurso(cursoE)
+
+        if (cursoE === "") {
+            this.abrirAlert("Nombre de Curso vacio", "El curso debe tener nombre")
+        } else {
+            this.postCurso(cursoE)
+        }
     }
 
     handleClasesChange(clasesData) {
@@ -69,7 +75,6 @@ export default class DialogCursos extends React.Component {
 
     handleClosingAlert() {
         if (this.state.exito) {
-            console.log("Hey, fui un exito");
             window.location.reload(false);
         } else {
             this.setState({
@@ -82,8 +87,8 @@ export default class DialogCursos extends React.Component {
     postCurso(nombreCurso) {
         const data = {
             nombre: nombreCurso,
-            secciones: [],
-            clases: [],
+            secciones: this.state.secciones,
+            clases: this.state.clases,
         }
 
         fetch(DEFAULTURL + '/cursos', {
@@ -98,67 +103,18 @@ export default class DialogCursos extends React.Component {
             },
             body: JSON.stringify(data),
         })
-            .then( response => {
-                console.log(response.status)
-                if(response.status === 200){
-                    this.postSecciones(data[0])
-                }else if(response.status === 400){
-                    this.abrirAlert("Curso repetido", "Ya existe un curso con ese nombre.")
+            .then(response => {
+                if (response.status === 200) {
+                    this.useState({
+                        exito: true,
+                    });
+                    this.abrirAlert("Curso registrado exitosamente", "");
+                } else if (response.status === 400) {
+                    this.abrirAlert("Curso repetido", "Ya existe un curso con ese nombre.");
                 }
             })
             .catch(
-                error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada."));
-    }
-
-    postSecciones(curso) {
-        if (this.state.secciones.length > 0) {
-            var newRoute = '/secciones/' + curso.id;
-
-            fetch(DEFAULTURL + newRoute, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                redirect: 'follow',
-                referrerPolicy: 'no-referrer',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.state.secciones),
-            })
-                .then(
-                    data => this.postClases(curso)
-                )
-                .catch(
-                    error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Cursos"));
-        } else {
-            this.postClases(curso)
-        }
-    }
-
-    postClases(curso) {
-        if (this.state.clases.length > 0) {
-            var newRoute = '/clases/' + curso.id;
-
-            fetch(DEFAULTURL + newRoute, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                redirect: 'follow',
-                referrerPolicy: 'no-referrer',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.state.clases),
-            })
-                .catch(
-                    error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada."));
-        }
-        this.setState({
-            exito: true,
-        });
-        this.abrirAlert("Curso registrado exitosamente", "");
+                error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente."));
     }
 
     render() {

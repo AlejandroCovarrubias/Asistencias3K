@@ -13,7 +13,6 @@ export default class ModalArchivo extends React.Component {
             <div>
                 <div className="container">
                     <div className="cursoTitulo">
-                        {this.props.cursoEscogido}
                     </div>
                 </div>
             </div>

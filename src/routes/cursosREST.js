@@ -70,11 +70,116 @@ router.post('/cursos', async (req, res) => {
                 //Si la base de datos está desconectada...
                 res.status(503).send("Error! No se pudo agregar el Curso");
             } else {
-                res.status(200).send(docs);
+                //res.status(200).send(docs);
+                postSecciones(docs[0], res);
             }
         });
     }
 });
+
+// POST
+async function postSecciones(doc, res) {
+    var arregloFinal = [];
+
+    // Consigue el ID mas reciente
+    const y = await seccion.find();
+    var IDmas = +0;
+    var IDinicial = utlidades.siguienteID(y);
+
+    for (var key in doc.secciones) {
+        var e = new seccion(doc.secciones[key]);
+        e.idCurso = doc.id;
+        e.id = +IDinicial + +IDmas;
+        IDmas = +IDmas + 1;
+        arregloFinal.push(e)
+    }
+
+    // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
+    // Enlaza a curso
+    const id = doc.id;
+    const filter = { id: id };
+
+    await curso.findOne(filter, function (err, docs) {
+        if (err) {
+            //Si la base de datos está desconectada...
+            res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
+        } else {
+            if (docs) {
+                const cursoE = docs;
+                arregloFinal.forEach(x => {
+                    cursoE.secciones.push(x);
+                })
+                console.log(cursoE);
+                const update = { secciones: cursoE.secciones };
+
+                curso.findOneAndUpdate(filter, update, function (err, docs) {
+                    if (err) {
+                        //Si la base de datos está desconectada...
+                        res.status(503).send("Error! No se encontró un curso con esa ID");
+                    } else {
+                        // Guarda la seccion en si
+                        seccion.insertMany(arregloFinal);
+                        //res.status(200).send("Actualizado el curso con la seccion agregada.");
+                        postClases(doc, res);
+                    }
+                });
+            } else {
+                res.status(404).send("No se encontró un curso con ese ID");
+            }
+        }
+    });
+}
+
+async function postClases(doc, res) {
+    var arregloFinal = [];
+
+    // Consigue el ID mas reciente
+    const y = await clase.find();
+    var IDmas = +0;
+    var IDinicial = utlidades.siguienteID(y)
+
+    for (var key in doc.clases) {
+        var e = new clase(doc.clases[key]);
+        e.idCurso = doc.id;
+        e.id = +IDinicial + +IDmas;
+        IDmas = +IDmas + 1;
+        arregloFinal.push(e)
+    }
+
+    // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
+    // Enlaza a curso
+    const id = doc.id;
+    const filter = { id: id }
+
+    await curso.findOne(filter, function (err, docs) {
+        if (err) {
+            //Si la base de datos está desconectada...
+            res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
+        } else {
+            if (docs) {
+                const cursoE = docs;
+                arregloFinal.forEach(x => {
+                    cursoE.clases.push(x);
+                })
+                console.log(cursoE);
+                const update = { clases: cursoE.clases };
+
+                curso.findOneAndUpdate(filter, update, function (err, docs) {
+                    if (err) {
+                        //Si la base de datos está desconectada...
+                        res.status(503).send("Error! No se encontró un curso con esa ID");
+                    } else {
+                        // Guarda el curso en si
+                        clase.insertMany(arregloFinal);
+                        res.status(200).send("Curso, clase y secciones agregados con éxito.");
+                    }
+                });
+            } else {
+                res.status(404).send("No se encontró un curso con ese ID");
+            }
+        }
+    });
+}
 
 // PUT
 router.put('/cursos/:id', async (req, res) => {

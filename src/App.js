@@ -55,8 +55,11 @@ class App extends React.Component {
     })
       .then(
         response => response.json())
-      .then(
-        data => this.setState({ listaCursos: data }))
+      .then( data => {
+        if(data.length > 0){
+          this.setState({ listaCursos: data })
+        }
+      })
       .catch(
         error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página."));
   }
@@ -145,8 +148,7 @@ class App extends React.Component {
         </div>
 
         <div>
-          <ViewTables
-            cursoEscogido={this.state.listaCursos[this.state.indexEscogido].nombre} />
+          <ViewTables />
         </div>
         
         <DialogCursos
