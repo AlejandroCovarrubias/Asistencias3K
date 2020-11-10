@@ -63,6 +63,12 @@ router.post('/cursos', async (req, res) => {
         res.status(400).send("Ya existe un curso con ese nombre.")
     } else {
 
+        // Separa secciones y clases del cuerpo
+        var secciones = e.secciones
+        var clases = e.clases
+        e.secciones = [];
+        e.clases= [];
+
         e.id = utlidades.siguienteID(x)
 
         await curso.insertMany(e, function (err, docs) {
@@ -71,14 +77,14 @@ router.post('/cursos', async (req, res) => {
                 res.status(503).send("Error! No se pudo agregar el Curso");
             } else {
                 //res.status(200).send(docs);
-                postSecciones(docs[0], res);
+                postSecciones(docs[0], res, secciones, clases);
             }
         });
     }
 });
 
 // POST
-async function postSecciones(doc, res) {
+async function postSecciones(doc, res, secciones, clases) {
     var arregloFinal = [];
 
     // Consigue el ID mas reciente
@@ -86,8 +92,8 @@ async function postSecciones(doc, res) {
     var IDmas = +0;
     var IDinicial = utlidades.siguienteID(y);
 
-    for (var key in doc.secciones) {
-        var e = new seccion(doc.secciones[key]);
+    for (var key in secciones) {
+        var e = new seccion(secciones[key]);
         e.idCurso = doc.id;
         e.id = +IDinicial + +IDmas;
         IDmas = +IDmas + 1;
@@ -120,7 +126,7 @@ async function postSecciones(doc, res) {
                         // Guarda la seccion en si
                         seccion.insertMany(arregloFinal);
                         //res.status(200).send("Actualizado el curso con la seccion agregada.");
-                        postClases(doc, res);
+                        postClases(doc, res, clases);
                     }
                 });
             } else {
@@ -130,7 +136,7 @@ async function postSecciones(doc, res) {
     });
 }
 
-async function postClases(doc, res) {
+async function postClases(doc, res, clases) {
     var arregloFinal = [];
 
     // Consigue el ID mas reciente
@@ -138,8 +144,8 @@ async function postClases(doc, res) {
     var IDmas = +0;
     var IDinicial = utlidades.siguienteID(y)
 
-    for (var key in doc.clases) {
-        var e = new clase(doc.clases[key]);
+    for (var key in clases) {
+        var e = new clase(clases[key]);
         e.idCurso = doc.id;
         e.id = +IDinicial + +IDmas;
         IDmas = +IDmas + 1;
