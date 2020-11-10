@@ -29,7 +29,7 @@ const mongoose = require('mongoose');
 router.get('/secciones/:id', async (req, res) => {
     const id = req.params.id;
 
-    await seccion.findOne({ id:id }, function (err, docs) {
+    await seccion.findOne({ id: id }, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se pudo acceder a las secciones");
@@ -103,24 +103,24 @@ router.post('/secciones/:id', async (req, res) => {
 // PUT
 router.put('/secciones/:id', async (req, res) => {
     const id = req.params.id;
-    const filter = {id:id}
+    const filter = { id: id }
     const update = { nombre: req.body.nombre }
 
     await seccion.findOneAndUpdate(filter, update, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se encontró una seccion con esa ID");
-        }else{
-            if(docs){
+        } else {
+            if (docs) {
                 // Guarda la referencia
                 const seccionE = docs;
                 // Actualiza el curso
-                curso.findOne({id:seccionE.idCurso}, function(err,docs){
+                curso.findOne({ id: seccionE.idCurso }, function (err, docs) {
                     if (err) {
                         //Si la base de datos está desconectada...
                         res.status(404).send("Error! No se encontró el curso de esta seccion");
-                    }else{
-                        if(docs){
+                    } else {
+                        if (docs) {
                             // Guarda la referencia
                             const cursoE = docs;
                             // Busca la seccion a modificar dentro del curso
@@ -131,95 +131,98 @@ router.put('/secciones/:id', async (req, res) => {
                                 // Modifica
                                 cursoE.secciones[index].nombre = req.body.nombre
 
-                                 curso.findOneAndUpdate({id:seccionE.idCurso}, { secciones: cursoE.secciones }, function (err, docs) {
+                                curso.findOneAndUpdate({ id: seccionE.idCurso }, { secciones: cursoE.secciones }, function (err, docs) {
                                     if (err) {
                                         //Si la base de datos está desconectada...
                                         res.status(404).send("Error! No se encontró una seccion con esa ID");
                                     } else {
                                         res.status(200).send("Actualizada la seccion correctamente.");
-                                    }})
+                                    }
+                                })
                             }
-                        }else{
+                        } else {
                             res.status(404).send("Error! No se encontró el curso de esta seccion");
                         }
                     }
                 })
-                
+
 
             } else {
                 res.status(404).send("No se encontró una sesion con ese ID");
             }
         }
-        })
+    })
 
-    
+
 })
 
 // DELETE
 
 router.delete('/secciones/:id', async (req, res) => {
     const id = req.params.id;
-    const filter = {id:id}
+    const filter = { id: id }
     await seccion.findOne(filter, function (err, docs) {
         if (err) {
             //Si la base de datos está desconectada...
             res.status(404).send("Error! No se pudo encontrar una seccion con ese ID");
-        }else{
-            if(docs){
+        } else {
+            if (docs) {
                 // Guarda la referencia
                 const seccionE = docs;
 
                 // Elimina de curso
-                curso.findOne({id:seccionE.idCurso}, function(err,docs){
+                curso.findOne({ id: seccionE.idCurso }, function (err, docs) {
                     if (err) {
-                    //Si la base de datos está desconectada...
-                    res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
-                }else{
-                    if(docs){
-                        // Guarda la referencia
-                        const cursoE = docs;
-                        // Busca la seccion a eliminar dentro del curso
-                        const index = cursoE.secciones.findIndex((el) => el.id == id);
-                        // Por si las dudas checa que lo encuentra
-                        if (index !== -1) {
-                            // Elimina
-                            cursoE.secciones.splice(index, 1)
-                            curso.findOneAndUpdate({id:seccionE.idCurso}, { secciones: cursoE.secciones }, function(err,docs){
-                                if(err){
-                                    res.status(404).send("No se pudo eliminar la seccion del curso")
-                                }else{
-                                    if(docs){
-                                        console.log("Eliminado compa")
-                                    }else{
-                                        res.status(404).send("No se pudo eliminar la seccion del curso x 2")
+                        //Si la base de datos está desconectada...
+                        res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+                    } else {
+                        if (docs) {
+                            // Guarda la referencia
+                            const cursoE = docs;
+                            // Busca la seccion a eliminar dentro del curso
+                            const index = cursoE.secciones.findIndex((el) => el.id == id);
+                            // Por si las dudas checa que lo encuentra
+                            if (index !== -1) {
+                                // Elimina
+                                cursoE.secciones.splice(index, 1)
+                                curso.findOneAndUpdate({ id: seccionE.idCurso }, { secciones: cursoE.secciones }, function (err, docs) {
+                                    if (err) {
+                                        res.status(404).send("No se pudo eliminar la seccion del curso")
+                                    } else {
+                                        if (docs) {
+                                            console.log("Eliminado compa")
+                                        } else {
+                                            res.status(404).send("No se pudo eliminar la seccion del curso x 2")
+                                        }
                                     }
+                                })
+                            }
+                            // Elimina la seccion en si
+
+                            seccion.findOneAndDelete(filter, function (err, docs) {
+                                if (err) {
+                                    //Si la base de datos está desconectada...
+                                    res.status(404).send("Error! No se encontró una seccion con esa ID");
+                                } else {
+                                    res.status(200).send("Seccion eliminada correctamente");
                                 }
                             })
-                        }
-                        // Elimina la seccion en si
-
-                        seccion.findOneAndDelete(filter, function (err, docs) {
-                            if (err) {
-                                //Si la base de datos está desconectada...
-                                res.status(404).send("Error! No se encontró una seccion con esa ID");
-                            } else {
-                                res.status(200).send("Seccion eliminada correctamente");
-                            }})
                         } else {
-                                res.status(404).send("No se encontró una seccion con ese ID");
-                                return;
-                            }
-                    }})
-                    } else {
-                        res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+                            res.status(404).send("No se encontró una seccion con ese ID");
+                            return;
+                        }
                     }
-                }
-                
-            })
+                })
+            } else {
+                res.status(404).send("Error! No se encontró un curso con la ID en la seccion");
+            }
+        }
 
-                
+    })
 
-    
+
+
+
 
 })
 
