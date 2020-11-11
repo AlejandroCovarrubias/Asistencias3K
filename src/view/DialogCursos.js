@@ -46,8 +46,11 @@ export default class DialogCursos extends React.Component {
         event.preventDefault();
         var cursoE = document.getElementById('cursoNombre').value
 
-        if (cursoE === "") {
-            this.abrirAlert("Nombre de Curso vacio", "El curso debe tener nombre")
+        if(!cursoE || !cursoE.trim()){
+            //cursoE es nulo, undefined, or contiene solo espacios
+            this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
+        } else if (cursoE === "") {  
+            this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
         } else {
             this.postCurso(cursoE)
         }
