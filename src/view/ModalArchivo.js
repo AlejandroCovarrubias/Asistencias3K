@@ -28,7 +28,7 @@ export default class ModalArchivo extends React.Component {
     }
 
     doOptions = function (x) {
-        return <option key={x.nombre}>{x.nombre}</option>
+        return <option key={x.id}>{x.nombre}</option>
     };
 
     handleCursosChange = function (x) {

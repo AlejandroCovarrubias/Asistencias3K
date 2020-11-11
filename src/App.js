@@ -18,6 +18,7 @@ class App extends React.Component {
       curso: {},
       listaCursos: [
         {
+          id: 0,
           nombre: '',
           secciones: [],
           clases: [],
@@ -65,7 +66,7 @@ class App extends React.Component {
   }
 
   doOptions = function (x) {
-    return <option key={x.nombre}>{x.nombre}</option>
+    return <option key={x.id}>{x.nombre}</option>
   };
 
   abrirDialogoCursos() {
@@ -148,7 +149,9 @@ class App extends React.Component {
         </div>
 
         <div>
-          <ViewTables />
+          <ViewTables 
+            clases={this.state.listaCursos[this.state.indexEscogido].clases}
+            nombre={this.state.listaCursos[this.state.indexEscogido].nombre}/>
         </div>
         
         <DialogCursos

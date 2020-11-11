@@ -156,9 +156,9 @@ export default class DragAndDrop extends React.Component {
                     }
                     {this.props.children}
                 </div>
-                <div>
+                <div className="upload-section">
                     <input type="file" hidden ref={this.inputReference} onChange={this.fileUploadInputChange} />
-                    <button className="ui button" onClick={this.fileUploadAction}>
+                    <button className="upload-button" onClick={this.fileUploadAction}>
                         SUBIR ARCHIVO
                     </button>
                 </div>
