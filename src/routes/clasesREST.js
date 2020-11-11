@@ -23,6 +23,8 @@ router.post('/clases/:id', async (req, res) => {
     var IDmas = +0;
     var IDinicial = utlidades.siguienteID(y)
 
+    
+
     for (var key in req.body) {
         if (req.body.hasOwnProperty(key)) {
             var e = new clase(req.body[key]);
@@ -30,44 +32,60 @@ router.post('/clases/:id', async (req, res) => {
             e.id = +IDinicial + +IDmas;
             IDmas = +IDmas + 1;
             arregloFinal.push(e)
+            e.nombre = e.nombre.trim();
         }
     }
 
-    // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
-    // Enlaza a curso
-    const id = req.params.id;
-    const filter = { id: id }
-
-    await curso.findOne(filter, function (err, docs) {
-        if (err) {
-            //Si la base de datos está desconectada...
-            res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
-        } else{
-            if(docs){
-                const cursoE = docs;
-                arregloFinal.forEach( x => {
-                    cursoE.clases.push(x);
-                })
-                console.log(cursoE);
-                const update = { clases: cursoE.clases };
-                
-                curso.findOneAndUpdate(filter, update, function (err, docs) {
-                    if (err) {
-                        //Si la base de datos está desconectada...
-                        res.status(503).send("Error! No se encontró un curso con esa ID");
-                    } else {
-                        // Guarda la seccion en si
-                        console.log("ARREGLO")
-                        console.log(arregloFinal)
-                        clase.insertMany(arregloFinal);
-                        res.status(200).send("Actualizado el curso con la clase agregada.");
-                    }
-                });
-            } else {
-                res.status(404).send("No se encontró un curso con ese ID");
-            }
+    // No permite vacios o puros espacios
+    var unoVacio = false;
+    arregloFinal.forEach(clase => {
+        if (clase.nombre.lenght>0) {
+            ;
+        }else{
+            unoVacio = true;
         }
-    });
+    })
+
+    if(unoVacio){
+        res.status(400).send("Alguno de las clases enviadas no tienen nombre.")
+    }else{
+
+        // Primero enlaza a curso, despues anadie a la base de datos (por si curso invalido)
+        // Enlaza a curso
+        const id = req.params.id;
+        const filter = { id: id }
+
+        await curso.findOne(filter, function (err, docs) {
+            if (err) {
+                //Si la base de datos está desconectada...
+                res.status(503).send("Error! No se pudo encontrar el Curso de la seccion");
+            } else{
+                if(docs){
+                    const cursoE = docs;
+                    arregloFinal.forEach( x => {
+                        cursoE.clases.push(x);
+                    })
+                    console.log(cursoE);
+                    const update = { clases: cursoE.clases };
+                    
+                    curso.findOneAndUpdate(filter, update, function (err, docs) {
+                        if (err) {
+                            //Si la base de datos está desconectada...
+                            res.status(503).send("Error! No se encontró un curso con esa ID");
+                        } else {
+                            // Guarda la seccion en si
+                            console.log("ARREGLO")
+                            console.log(arregloFinal)
+                            clase.insertMany(arregloFinal);
+                            res.status(200).send("Actualizado el curso con la clase agregada.");
+                        }
+                    });
+                } else {
+                    res.status(404).send("No se encontró un curso con ese ID");
+                }
+            }
+        });
+    }
 });
 
 // GET
@@ -93,6 +111,12 @@ router.get('/clases/:id', async (req, res) => {
 router.put('/clases/:id', async (req, res) => {
     const id = req.params.id;
     const filter = {id:id}
+
+    // Revisa que no este vacio o sean puros espacios
+    e.nombre = e.nombre.trim()
+    
+    if(e.nombre.lenght>0){
+
     const update = { nombre: req.body.nombre }
 
     await clase.findOneAndUpdate(filter, update, function (err, docs) {
@@ -141,7 +165,9 @@ router.put('/clases/:id', async (req, res) => {
         }
         })
 
-    
+    }else{
+        res.status(400).send("No se aceptan cursos con nombres vacios.")
+    }
 })
 
 // DELETE
