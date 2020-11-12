@@ -67,8 +67,10 @@ exports.combinarArreglos = (...arreglos) => {
     var arregloFinal = [];
     // Agrega todo a uno
     arreglos.forEach(arreglo => {
-        arregloFinal = [...arregloFinal, ...arreglos]
+        arreglo.forEach(elemento =>{
+            arregloFinal.push(elemento)
+        })
     })
     // Lo convierte en set y despues en arreglo
-    return Array.from(new Set([...arregloFinal]))
+    return Array.from(new Set([arregloFinal]))
 }

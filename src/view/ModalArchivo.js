@@ -8,6 +8,9 @@ import Slide from '@material-ui/core/Slide';
 import DragAndDrop from './DragAndDrop.js';
 import DialogAlert from './DialogAlert.js';
 
+
+const DEFAULTURL = 'http://localhost:8080';
+
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -18,17 +21,22 @@ export default class ModalArchivo extends React.Component {
 
         this.state = {
             indexEscogido: 0,
+            indexEscogidoClases: 0,
+            indexEscogidoSecciones: 0,
             isOpenDialogCursos: false,
             isOpenModalArchivos: false,
             isOpenAlert: false,
-            files: [],
+            files: [{"nombre":""}], // Crashea si esta vacio esto xd
         };
+        this.subirArchivo = this.subirArchivo.bind(this);
         this.handleCursosChange = this.handleCursosChange.bind(this);
+        this.handleClasesChange = this.handleClasesChange.bind(this);
+        this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
     }
 
     doOptions = function (x) {
-        return <option key={x.nombre}>{x.nombre}</option>
+        return <option key={x.id}>{x.nombre}</option>
     };
 
     handleCursosChange = function (x) {
@@ -39,13 +47,29 @@ export default class ModalArchivo extends React.Component {
         });
     };
 
+    handleClasesChange = function (x) {
+        const { selectedIndex } = x.target.options;
+
+        this.setState({
+            indexEscogidoClases: selectedIndex,
+        });
+    };
+
+    handleSeccionesChange = function (x) {
+        const { selectedIndex } = x.target.options;
+
+        this.setState({
+            indexEscogidoSecciones: selectedIndex,
+        });
+    };
+
     //Maneja los archivos
     handleDrop = (files) => {
         let fileList = this.state.files
         fileList = []
 
         console.log(files[0])
-        fileList.push(files[0].name)
+        fileList.push(files[0])
 
         this.setState({ files: fileList });
     }
@@ -60,6 +84,59 @@ export default class ModalArchivo extends React.Component {
         this.setState({
             isOpenAlert: false,
         });
+    }
+
+    subirArchivo() {
+        var curso = this.props.lista[this.state.indexEscogido]
+        var idClase = curso.clases[this.state.indexEscogidoClases].id
+        var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
+        //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
+        var file = this.state.files[0];
+        
+        // Leer el archivo y convertirlo a texto para mandarlo
+        var lector = new FileReader()
+        lector.readAsText(file)
+
+        // Cacha error de lectura
+        lector.onerror = function(e) {
+            alert("Hubo un error con la lectura del documento.\n"+lector.error)
+            lector.abort();
+        }
+
+        // Envia los datos cuando termine de leer el documento
+        lector.onload = function(e) {
+
+            const data = {
+                idClase : idClase,
+                idSeccion : idSeccion,
+                archivo : lector.result
+            }
+
+            fetch(DEFAULTURL + '/asistencias', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                redirect: 'follow',
+                referrerPolicy: 'no-referrer',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        alert("Asistencias registradas correctamente.");
+                    } else if (response.status === 404) {
+                        alert("Error de busqueda"+ "\nLa clase o seccion seleccionada no existen.");
+                    }
+                })
+                .catch(
+                    error => {
+                        alert("Conexión Rechazada" +"\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
+                        console.log(error);
+                    })
+            }
     }
 
     render() {
@@ -85,7 +162,7 @@ export default class ModalArchivo extends React.Component {
                                 handleDrop={this.handleDrop}
                                 handleOpenAlert={this.handleOpenAlert}>
                                 <div >
-                                    <div >{this.state.files[0]}</div>
+                                    <div >{this.state.files[0].name}</div>
                                 </div>
                             </DragAndDrop>
 
@@ -103,17 +180,19 @@ export default class ModalArchivo extends React.Component {
                                         onChange={this.handleCursosChange}>
                                         {this.props.lista.map(this.doOptions)}
                                     </select>
-                                    <select className="drop" name="clases" id="clases" >
+                                    <select className="drop" name="clases" id="clases" 
+                                        onChange={this.handleClasesChange}>
                                         {this.props.lista[this.state.indexEscogido].clases.map(this.doOptions)}
                                     </select>
-                                    <select className="drop" name="secciones" id="secciones" >
+                                    <select className="drop" name="secciones" id="secciones"  
+                                        onChange={this.handleSeccionesChange}>
                                         {this.props.lista[this.state.indexEscogido].secciones.map(this.doOptions)}
                                     </select>
                                 </div>
                             </div>
 
                             <div className="archivo-submit">
-                                <button className="generic-button">SUBIR</button>
+                                <button className="generic-button" onClick={this.subirArchivo}>SUBIR</button>
                                 <button className="generic-button" onClick={this.props.closeAction}>CANCELAR</button>
                             </div>
                         </div>
