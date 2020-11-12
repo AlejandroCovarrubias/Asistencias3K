@@ -56,7 +56,11 @@ exports.leerArchivo = (archivo) => {
         //console.log(arregloFinal)
 
         // regresa el arreglo
-        return [arregloFinal, fecha];
+        console.log("FECHA:"+fecha)
+        return {
+            arregloFinal,
+            fecha
+        }
     }
     
 
