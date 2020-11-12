@@ -175,6 +175,7 @@ async function postClases(doc, res, clases) {
     var IDmas = +0;
     var IDinicial = utlidades.siguienteID(y);
 
+    var unoVacio = false;
     for (var key in clases) {
         var e = new clase(clases[key]);
         e.idCurso = doc.id;
@@ -244,11 +245,11 @@ router.put('/cursos/:id', async (req, res) => {
     const filter = { id: id };
     
     // Revisa que no este vacio o sean puros espacios
-    e.nombre = e.nombre.trim()
+    var e = req.body.nombre.trim()
     
-    if(e.nombre.lenght>0){
+    if(e.lenght>0){
         const update = {
-            nombre: req.body.nombre
+            nombre: e
         };
         
         await curso.findOneAndUpdate(filter, update, function (err, docs) {
