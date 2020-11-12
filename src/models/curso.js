@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const cursoEsquema = new mongoose.Schema({
-    idUsuario: Number,
-    idCurso: Number,
+    id: String,
+    idUsuario: String,
     nombre: String,
     secciones: { type : Array , "default" : [] },
     clases: { type : Array , "default" : [] }

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const seccionEsquema = new mongoose.Schema({
-    idSeccion: Number,
-    idCurso: Number,
+    id: String,
+    idCurso: String,
     nombre: String
 });
 
