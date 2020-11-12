@@ -117,7 +117,7 @@ export default class DialogCursos extends React.Component {
                 }
             })
             .catch(
-                error => console.log(error));
+                error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente."));
     }
 
     render() {
