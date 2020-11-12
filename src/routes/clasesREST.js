@@ -113,61 +113,61 @@ router.put('/clases/:id', async (req, res) => {
     const filter = {id:id}
 
     // Revisa que no este vacio o sean puros espacios
-    e.nombre = e.nombre.trim()
+    var e = req.body.nombre.trim()
     
-    if(e.nombre.lenght>0){
+    if(e.lenght>0){
 
-    const update = { nombre: req.body.nombre }
+        const update = { nombre: req.body.nombre }
 
-    await clase.findOneAndUpdate(filter, update, function (err, docs) {
-        if (err) {
-            //Si la base de datos está desconectada...
-            res.status(503).send("Error! No se encontró una clase con esa ID");
-        }else{
-            if(docs){
-                // Guarda la referencia
-                const claseE = docs;
-                // Actualiza el curso
-                curso.findOne({id:claseE.idCurso}, function(err,docs){
-                    if (err) {
-                        //Si la base de datos está desconectada...
-                        res.status(503).send("Error! No se encontró el curso de esta clase");
-                    }else{
-                        if(docs){
-                            // Guarda la referencia
-                            const cursoE = docs;
-                            // Busca la seccion a modificar dentro del curso
-                            const index = cursoE.clases.findIndex((el) => el.id == id);
-
-                            // Por si las dudas checa que lo encuentra
-                            if (index !== -1) {
-                                // Modifica
-                                cursoE.clases[index].nombre = req.body.nombre
-
-                                 curso.findOneAndUpdate({id:claseE.idCurso}, { clases: cursoE.clases }, function (err, docs) {
-                                    if (err) {
-                                        //Si la base de datos está desconectada...
-                                        res.status(503).send("No se pudo actualizar el curso a donde pertenece la clase.");
-                                    } else {
-                                        res.status(200).send("Actualizada la clase correctamente.");
-                                    }})
-                            }
+        await clase.findOneAndUpdate(filter, update, function (err, docs) {
+            if (err) {
+                //Si la base de datos está desconectada...
+                res.status(503).send("Error! No se encontró una clase con esa ID");
+            }else{
+                if(docs){
+                    // Guarda la referencia
+                    const claseE = docs;
+                    // Actualiza el curso
+                    curso.findOne({id:claseE.idCurso}, function(err,docs){
+                        if (err) {
+                            //Si la base de datos está desconectada...
+                            res.status(503).send("Error! No se encontró el curso de esta clase");
                         }else{
-                            res.status(404).send("Error! No se encontró el curso de esta clase");
+                            if(docs){
+                                // Guarda la referencia
+                                const cursoE = docs;
+                                // Busca la seccion a modificar dentro del curso
+                                const index = cursoE.clases.findIndex((el) => el.id == id);
+
+                                // Por si las dudas checa que lo encuentra
+                                if (index !== -1) {
+                                    // Modifica
+                                    cursoE.clases[index].nombre = req.body.nombre
+
+                                    curso.findOneAndUpdate({id:claseE.idCurso}, { clases: cursoE.clases }, function (err, docs) {
+                                        if (err) {
+                                            //Si la base de datos está desconectada...
+                                            res.status(503).send("No se pudo actualizar el curso a donde pertenece la clase.");
+                                        } else {
+                                            res.status(200).send("Actualizada la clase correctamente.");
+                                        }})
+                                }
+                            }else{
+                                res.status(404).send("Error! No se encontró el curso de esta clase");
+                            }
                         }
-                    }
-                })
-                
+                    })
+                    
 
-            } else {
-                res.status(404).send("No se encontró una clase con ese ID");
+                } else {
+                    res.status(404).send("No se encontró una clase con ese ID");
+                }
             }
-        }
-        })
+            })
 
-    }else{
-        res.status(400).send("No se aceptan cursos con nombres vacios.")
-    }
+        }else{
+            res.status(400).send("No se aceptan cursos con nombres vacios.")
+        }
 })
 
 // DELETE
