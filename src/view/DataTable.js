@@ -1,17 +1,19 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 
-const columns = [
-  { field: 'nombreAlumno', headerName: 'Nombre del Alumno', width: 200 },
-  { field: 'fecha', headerName: 'PRIMER FECHA', width: 30},
-];
+export default class DataTable extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+      };
+    }
 
-const rows = [];
+      render() {
+        return(
+          <div style={{ height: 240, width: '100%' }}>
+            <DataGrid size='small' rows={this.props.rows} columns={this.props.columns} pageSize={10} />
+          </div>
+        );
+    }
+  }
 
-export default function DataTable() {
-  return (
-    <div style={{ height: 240, width: '100%' }}>
-      <DataGrid size='small' rows={rows} columns={columns} pageSize={10} />
-    </div>
-  );
-}

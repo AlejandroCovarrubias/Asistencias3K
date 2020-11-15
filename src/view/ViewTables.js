@@ -10,26 +10,47 @@ export default class ModalArchivo extends React.Component {
         };
     }
 
-    doRows(x, y) {
-
-    }
 
     doTable = function (x) {
         console.log(x);
+        // 
+        // cols.push({ field: 'nombre', headerName: 'Nombre del Alumno', width: 300 });
+
+        // console.log(x.sesiones);
+
+        // for(var elm in x.sesiones){
+        //     console.log(elm);
+        //     cols.push({ field: "Aqui debe ir una fecha", headerName: "Aqui debe ir una fecha", width: 50 });
+        // }
+
+
+        // Define las hileras
+
         var cols = [];
-        cols.push({ field: 'nombre', headerName: 'Nombre del Alumno', width: 300 });
-
-        console.log(x.sesiones);
-
-        for(var elm in x.sesiones){
-            console.log(elm);
-            cols.push({ field: "Aqui debe ir una fecha", headerName: "Aqui debe ir una fecha", width: 50 });
-        }
-
-        console.log(cols);
-
-        //var rows = doRows(x.alumnos, x.sesiones);
         var rows = [];
+        // Primera hilera son los headers
+        // Nombre
+        cols.push({ field: 'nombre', headerName: 'Nombre del Alumno', width: 300 });
+        // Sesiones
+        x.sesiones.forEach(element => {
+            console.log("Toy iterando")
+            console.log(element)
+            cols.push({field:'fecha', headerName: element.fechaSesion, width: 150});
+        });
+
+        // Ahora viene lo bueno, las hileras
+        // Vamos a iterar por alumnos
+        // x.alumnos.forEach(alumno =>{
+        //     row = []
+        //     // Primer espacio es el nombre de alumno
+        //     row.push({field: 'nombre', value:alumno.nombre});
+        //     // Itera por sesiones para ver en cuales esta
+        //     x.sesiones.forEach(sesion =>{
+        //         if(sesion.asistentes.includes(alumno.nombre)){
+        //             row.push()
+        //         }
+        //     })
+        // })
 
         return (
             <div className="class">
@@ -38,7 +59,7 @@ export default class ModalArchivo extends React.Component {
                     <hr />
                 </div>
                 <div className="class-table">
-                    <DataTable cols={cols} rows={rows}/>
+                    <DataTable columns={cols} rows={rows}/>
                 </div>
             </div>
         )
