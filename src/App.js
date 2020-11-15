@@ -111,6 +111,8 @@ class App extends React.Component {
     this.setState({
       indexEscogido: selectedIndex,
     })
+
+    console.log(this.state.listaCursos[this.state.indexEscogido]);
   };
 
   render() {

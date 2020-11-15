@@ -52,14 +52,6 @@ export default class DragAndDrop extends React.Component {
             const reader = new FileReader();
             reader.readAsDataURL(e.dataTransfer.files[0])
 
-            const payload = new FormData();
-            payload.append('file', e.dataTransfer.files[0]);
-
-            const xhr = new XMLHttpRequest();
-
-            xhr.open('POST', 'http://localhost:8080/uploadFile');
-            xhr.send(payload);
-
             e.preventDefault()
             e.stopPropagation()
             this.setState({ drag: false })
