@@ -51,7 +51,9 @@ exports.leerArchivo = (archivo) => {
         // Le quitamos todo el chuche para que nomas queden nombres en cada uno y los agregamos al final
         arreglo.forEach(el => {
             var index = el.indexOf('\t')
-            arregloFinal.push(el.substring(0, index))
+            // Pasa el nombre todo a mayusculas para evitar repeticiones por eso
+            var nombreNuevo = el.substring(0, index).toUpperCase();
+            arregloFinal.push(nombreNuevo)
         })
         //console.log(arregloFinal)
 
@@ -67,14 +69,15 @@ exports.leerArchivo = (archivo) => {
 
 
 // Combinar arreglos sin repeticiones
-exports.combinarArreglos = (...arreglos) => {
+exports.combinarArreglos = (primero, segundo) => {
     var arregloFinal = [];
     // Agrega todo a uno
-    arreglos.forEach(arreglo => {
-        arreglo.forEach(elemento =>{
-            arregloFinal.push(elemento)
-        })
+    primero.forEach(elemento => {
+        arregloFinal.push(elemento)
+    });
+    segundo.forEach(elemento => {
+        arregloFinal.push(elemento)
     })
     // Lo convierte en set y despues en arreglo
-    return Array.from(new Set([arregloFinal]))
+    return [...new Set(arregloFinal)];
 }

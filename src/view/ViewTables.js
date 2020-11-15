@@ -2,6 +2,7 @@ import React from 'react';
 import '../style/App.css';
 
 import DataTable from './DataTable.js';
+import { RowCount } from '@material-ui/data-grid';
 
 export default class ModalArchivo extends React.Component {
     constructor(props) {
@@ -35,22 +36,32 @@ export default class ModalArchivo extends React.Component {
         x.sesiones.forEach(element => {
             console.log("Toy iterando")
             console.log(element)
-            cols.push({field:'fecha', headerName: element.fechaSesion, width: 150});
+            cols.push({field:element.fechaSesion, headerName: element.fechaSesion, width: 150});
         });
 
         // Ahora viene lo bueno, las hileras
         // Vamos a iterar por alumnos
-        // x.alumnos.forEach(alumno =>{
-        //     row = []
-        //     // Primer espacio es el nombre de alumno
-        //     row.push({field: 'nombre', value:alumno.nombre});
-        //     // Itera por sesiones para ver en cuales esta
-        //     x.sesiones.forEach(sesion =>{
-        //         if(sesion.asistentes.includes(alumno.nombre)){
-        //             row.push()
-        //         }
-        //     })
-        // })
+        x.alumnos.forEach(function (alumno, index){
+            console.log("Iterando por alumnos "+index)
+            var row ="{ \"id\":"+index+", \"nombre\":\""+alumno+"\"";
+            // Itera por sesiones para ver en cuales esta
+            x.sesiones.forEach(sesion =>{
+                if(sesion.asistentes.includes(alumno)){
+                    var fecha = ", \""+sesion.fechaSesion+"\":\"✔\"";
+                    row = row + fecha;
+                }else{
+                    var fecha = ", \""+sesion.fechaSesion+"\":\"X\"";
+                    row = row + fecha;
+                }
+            })
+            // Termina el objeto
+            row = row + " }"
+            console.log(row)
+            var rowN = JSON.parse(row)
+            console.log(rowN)
+            // Agrega al arreglo de hileras
+            rows.push(rowN);
+        })
 
         return (
             <div className="class">

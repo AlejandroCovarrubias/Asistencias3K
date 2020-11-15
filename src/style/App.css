@@ -262,3 +262,13 @@
 .tables-container {
     margin-bottom: 100px;
 }
+
+/* Color de celdas */
+
+div.MuiDataGrid-cell[data-value="✔"]{
+    background-color: lightgreen;
+  }
+  
+  div.MuiDataGrid-cell[data-value="X"]{
+    background-color: red;
+  }
