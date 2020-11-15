@@ -34,13 +34,13 @@ exports.leerArchivo = (archivo) => {
         var fecha = archivo.substr(index, 10)
         //console.log(fecha)
         // Quita la primeras cinco lineas (no se por que se ocupan tantas pero nomas asi me deja con los nombres)
-        for (var i in [0, 1, 2, 3, 4, 5]) {
+        for(var i = 0; i < 5; i++){
             var linea = archivo.indexOf('\n')
             if (linea == 0)
-                linea = +1;
-            console.log(linea)
-            archivo = archivo.substr(linea)
-        }
+              linea = +1;
+              console.log(linea)
+              archivo = archivo.substr(linea)
+          } 
         //console.log(archivo)
         // Convertir a arreglo
         const arregloFinal = [];
