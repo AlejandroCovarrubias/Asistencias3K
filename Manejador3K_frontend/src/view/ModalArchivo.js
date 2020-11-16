@@ -28,12 +28,16 @@ export default class ModalArchivo extends React.Component {
             isOpenAlert: false,
             tituloAlerta: "",
             mensajeAlerta: "",
+            exito: false,
             files: [{ "nombre": "" }], // Crashea si esta vacio esto xd
         };
         this.subirArchivo = this.subirArchivo.bind(this);
         this.handleCursosChange = this.handleCursosChange.bind(this);
         this.handleClasesChange = this.handleClasesChange.bind(this);
         this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
+        this.handleClosingAlert = this.handleClosingAlert.bind(this);
+        this.openAlert = this.openAlert.bind(this);
+        this.changeState = this.changeState.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
     }
 
@@ -89,6 +93,9 @@ export default class ModalArchivo extends React.Component {
     }
 
     subirArchivo() {
+        const openAlert = this.openAlert;
+        const changeState = this.changeState;
+
         var curso = this.props.lista[this.state.indexEscogido]
         var idClase = curso.clases[this.state.indexEscogidoClases].id
         var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
@@ -101,7 +108,8 @@ export default class ModalArchivo extends React.Component {
 
         // Cacha error de lectura
         lector.onerror = function (e) {
-            alert("Hubo un error con la lectura del documento.\n" + lector.error)
+            this.openAlert("No se ha podido leer el documento", "Hubo un problema al momento de leer el documento.")
+            //alert("Hubo un error con la lectura del documento.\n" + lector.error)
             lector.abort();
         }
 
@@ -128,25 +136,35 @@ export default class ModalArchivo extends React.Component {
             })
                 .then(response => {
                     if (response.status === 200) {
-                        alert("Asistencias registradas correctamente.");
+                        openAlert("Asistencias registradas", "La lista asistencias ha sido guardada.")
+                        changeState()
+                        //alert("Asistencias registradas correctamente.");
                     } else if (response.status === 404) {
-                        alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
+                        openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
+                        //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
                     }
                 })
                 .catch(
                     error => {
-                        alert("Conexión Rechazada" + "\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
+                        openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
+                        //alert("Conexión Rechazada" + "\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
                         console.log(error);
                     })
         }
-    }
+    };
 
-    abrirAlert(titulo, mensaje) {
+    openAlert(titulo, mensaje) {
         this.setState({
             tituloAlerta: titulo,
             mensajeAlerta: mensaje,
             isOpenAlert: true,
         });
+    }
+
+    changeState(){
+        this.setState({
+            exito: true,
+        })
     }
 
     handleClosingAlert() {

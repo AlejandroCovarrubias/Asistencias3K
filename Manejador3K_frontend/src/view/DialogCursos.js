@@ -111,7 +111,7 @@ export default class DialogCursos extends React.Component {
                     this.setState({
                         exito: true,
                     });
-                    this.abrirAlert("Curso registrado exitosamente", "");
+                    this.abrirAlert("Curso registrado", "Recarga la página para ver los cambios");
                 } else if (response.status === 400) {
                     this.abrirAlert("Curso repetido", "Ya existe un curso con ese nombre.");
                 }

@@ -67,7 +67,7 @@ export default class ModalArchivo extends React.Component {
         )
     }
 
-    checkClasses(){
+    checkClasses() {
         return this.props.clases.length > 0;
     }
 
@@ -80,10 +80,10 @@ export default class ModalArchivo extends React.Component {
                         <hr />
                     </div>
                     <div className="tables-container">
-                        {!this.checkClasses() && 
-                        <div className="no-classes">
-                            <p>Parece que no hay clases en este curso.</p>
-                        </div>
+                        {!this.checkClasses() &&
+                            <div className="no-classes">
+                                <p>Parece que no hay clases en este curso.</p>
+                            </div>
                         }
                         {this.props.clases.map(this.doTable)}
                     </div>
