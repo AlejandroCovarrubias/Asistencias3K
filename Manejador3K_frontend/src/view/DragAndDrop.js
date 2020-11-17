@@ -70,35 +70,40 @@ export default class DragAndDrop extends React.Component {
     }
 
     handleFileUpload(e) {
-        const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
-        const { type } = e.target.files[0];
+        var fil = e.target.files[0];
+        
+        console.log(fil);
+        if (fil !== undefined) {
+            const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
+            const { type } = fil;
 
-        console.log(type);
-        if (supportedFilesTypes.indexOf(type) > -1) {
-            //Lee el archivo
-            const reader = new FileReader();
-            reader.readAsDataURL(e.target.files[0])
+            //console.log(type);
+            if (supportedFilesTypes.indexOf(type) > -1) {
+                //Lee el archivo
+                const reader = new FileReader();
+                reader.readAsDataURL(e.target.files[0])
 
 
-            //Cambiar de sitio
-            const payload = new FormData();
-            payload.append('file', e.target.files[0]);
+                //Cambiar de sitio
+                const payload = new FormData();
+                payload.append('file', e.target.files[0]);
 
-            const xhr = new XMLHttpRequest();
+                const xhr = new XMLHttpRequest();
 
-            xhr.open('POST', 'http://localhost:8080/uploadFile');
-            xhr.send(payload);
+                xhr.open('POST', 'http://localhost:8080/uploadFile');
+                xhr.send(payload);
 
-            e.preventDefault()
-            e.stopPropagation()
-            this.setState({ drag: false })
-            if (e.target.files && e.target.files.length > 0) {
-                this.props.handleDrop(e.target.files)
-                this.dragCounter = 0
+                e.preventDefault()
+                e.stopPropagation()
+                this.setState({ drag: false })
+                if (e.target.files && e.target.files.length > 0) {
+                    this.props.handleDrop(e.target.files)
+                    this.dragCounter = 0
+                }
+            } else {
+                //Hacer que te de el mensaje
+                this.handleOpenAlert();
             }
-        } else {
-            //Hacer que te de el mensaje
-            this.handleOpenAlert();
         }
     }
 
