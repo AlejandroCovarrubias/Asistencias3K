@@ -27,8 +27,10 @@ class App extends React.Component {
       isOpenDialogCursos: false,
       isOpenModalArchivos: false,
       isOpenAlert: false,
+      isCursosNotEmpty: false,
       tituloAlerta: "",
       mensajeAlerta: "",
+      botonAlerta: "",
       indexEscogido: 0,
     };
 
@@ -56,13 +58,13 @@ class App extends React.Component {
     })
       .then(
         response => response.json())
-      .then( data => {
-        if(data.length > 0){
-          this.setState({ listaCursos: data })
+      .then(data => {
+        if (data.length > 0) {
+          this.setState({ listaCursos: data, isCursosNotEmpty: true });
         }
       })
       .catch(
-        error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página."));
+        error => this.abrirAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente recargando la página.", "RECARGAR PÁGINA"));
   }
 
   doOptions = function (x) {
@@ -76,15 +78,20 @@ class App extends React.Component {
   }
 
   abrirModalArchivos() {
-    this.setState({
-      isOpenModalArchivos: true,
-    });
+    if (this.state.isCursosNotEmpty) {
+      this.setState({
+        isOpenModalArchivos: true,
+      });
+    }else{
+      this.abrirAlert("No se encontraron Cursos registrados", "Registra un Curso en el sistema para poder cargar asistencias.", "ACEPTAR");
+    }
   }
 
-  abrirAlert(titulo, mensaje) {
+  abrirAlert(titulo, mensaje, boton) {
     this.setState({
       tituloAlerta: titulo,
       mensajeAlerta: mensaje,
+      botonAlerta: boton,
       isOpenAlert: true,
     });
   }
@@ -107,7 +114,7 @@ class App extends React.Component {
   }
 
   handleChangeCursoEscogido = function (x) {
-    const {selectedIndex} = x.target.options;
+    const { selectedIndex } = x.target.options;
     this.setState({
       indexEscogido: selectedIndex,
     })
@@ -151,11 +158,11 @@ class App extends React.Component {
         </div>
 
         <div>
-          <ViewTables 
+          <ViewTables
             clases={this.state.listaCursos[this.state.indexEscogido].clases}
-            nombre={this.state.listaCursos[this.state.indexEscogido].nombre}/>
+            nombre={this.state.listaCursos[this.state.indexEscogido].nombre} />
         </div>
-        
+
         <DialogCursos
           open={this.state.isOpenDialogCursos}
           closeAction={this.handleClosingDialog}
@@ -169,7 +176,7 @@ class App extends React.Component {
           closeAction={this.handleClosingAlert}
           titulo={this.state.tituloAlerta}
           mensaje={this.state.mensajeAlerta}
-          buttonText={"ACTUALIZAR PÁGINA"} />
+          buttonText={this.state.botonAlerta} />
       </div>
     );
   }

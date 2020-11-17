@@ -29,7 +29,7 @@ export default class ModalArchivo extends React.Component {
             tituloAlerta: "",
             mensajeAlerta: "",
             exito: false,
-            files: [{ "nombre": "" }], // Crashea si esta vacio esto xd
+            files: [{ "name": "" }], // Crashea si esta vacio esto xd
         };
         this.subirArchivo = this.subirArchivo.bind(this);
         this.handleCursosChange = this.handleCursosChange.bind(this);
@@ -96,60 +96,72 @@ export default class ModalArchivo extends React.Component {
         const openAlert = this.openAlert;
         const changeState = this.changeState;
 
-        var curso = this.props.lista[this.state.indexEscogido]
-        var idClase = curso.clases[this.state.indexEscogidoClases].id
-        var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
-        //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
-        var file = this.state.files[0];
+        var curso = this.props.lista[this.state.indexEscogido];
 
-        // Leer el archivo y convertirlo a texto para mandarlo
-        var lector = new FileReader()
-        lector.readAsText(file)
+        if (curso.clases.length > 0 && curso.secciones.length > 0) {
+            var idClase = curso.clases[this.state.indexEscogidoClases].id
+            var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
+            //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
 
-        // Cacha error de lectura
-        lector.onerror = function (e) {
-            this.openAlert("No se ha podido leer el documento", "Hubo un problema al momento de leer el documento.")
-            //alert("Hubo un error con la lectura del documento.\n" + lector.error)
-            lector.abort();
-        }
+            var file = this.state.files[0];
+            // Leer el archivo y convertirlo a texto para mandarlo
+            var lector = new FileReader()
 
-        // Envia los datos cuando termine de leer el documento
-        lector.onload = function (e) {
-
-            const data = {
-                idClase: idClase,
-                idSeccion: idSeccion,
-                archivo: lector.result
+            if (file != null && file.size > 0) {
+                //console.log(file);
+                lector.readAsText(file)
+            } else {
+                this.openAlert("No se encontró ningun documento", "Arrastra un documento .CSV o cárgalo directamente.");
+                return
             }
 
-            fetch(DEFAULTURL + '/asistencias', {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                redirect: 'follow',
-                referrerPolicy: 'no-referrer',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-                .then(response => {
-                    if (response.status === 200) {
-                        openAlert("Asistencias registradas", "La lista asistencias ha sido guardada.")
-                        changeState()
-                        //alert("Asistencias registradas correctamente.");
-                    } else if (response.status === 404) {
-                        openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
-                        //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
-                    }
+            // Cacha error de lectura
+            lector.onerror = function (e) {
+                this.openAlert("No se ha podido leer el documento", "Hubo un problema al momento de leer el documento.")
+                //alert("Hubo un error con la lectura del documento.\n" + lector.error)
+                lector.abort();
+            }
+
+            // Envia los datos cuando termine de leer el documento
+            lector.onload = function (e) {
+
+                const data = {
+                    idClase: idClase,
+                    idSeccion: idSeccion,
+                    archivo: lector.result
+                }
+
+                fetch(DEFAULTURL + '/asistencias', {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 })
-                .catch(
-                    error => {
-                        openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
-                        //alert("Conexión Rechazada" + "\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
-                        console.log(error);
+                    .then(response => {
+                        if (response.status === 200) {
+                            openAlert("Asistencias registradas", "La lista asistencias ha sido guardada.")
+                            changeState()
+                            //alert("Asistencias registradas correctamente.");
+                        } else if (response.status === 404) {
+                            openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
+                            //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
+                        }
                     })
+                    .catch(
+                        error => {
+                            openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
+                            //alert("Conexión Rechazada" + "\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
+                            console.log(error);
+                        })
+            }
+        } else {
+            openAlert("Añade Clases y Secciones al Curso", "El Curso de " + this.props.lista[this.state.indexEscogido].nombre + " no tiene Clases y/o Secciones asignadas.");
         }
     };
 
@@ -161,7 +173,7 @@ export default class ModalArchivo extends React.Component {
         });
     }
 
-    changeState(){
+    changeState() {
         this.setState({
             exito: true,
         })
