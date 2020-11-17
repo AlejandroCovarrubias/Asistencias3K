@@ -53,7 +53,11 @@ exports.leerArchivo = (archivo) => {
             var index = el.indexOf('\t')
             // Pasa el nombre todo a mayusculas para evitar repeticiones por eso
             var nombreNuevo = el.substring(0, index).toUpperCase();
-            arregloFinal.push(nombreNuevo)
+            // Si esta vacio se va a la verch
+            if(nombreNuevo != "")
+                arregloFinal.push(nombreNuevo);
+            else
+                console.log("Parece que tenemos un pintero.");
         })
         //console.log(arregloFinal)
 

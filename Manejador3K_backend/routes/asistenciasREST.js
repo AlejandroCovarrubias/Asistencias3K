@@ -24,30 +24,34 @@ router.post('/asistencias', async(req,res) =>{
     const x = await asistencia.find();
     e.id = utlidades.siguienteID(x)
 
-    // Lee el archivo (ya que solo existe uno) para encontrar valores de fecha y asistentes
-    const datos = utlidades.leerArchivo(req.body.archivo)
-    
-    e.asistentes = datos.arregloFinal;
-    e.fechaSesion = datos.fecha;
-    
-    // Decide si reemplazar o ingresar
-    await asistencia.findOne({idSeccion:e.idSeccion,idClase:e.idClase,fechaSesion:e.fechaSesion},function(err,docs){
-        if(err){
-            res.status(503).send("Error al conectar a la base de datos.")
-        }else{
-            if(docs){
-                // Reemplazar
-                console.log("Me vine a reemplazar.")
-                reemplazar(e,res);
+    // Revisa que los IDS no esten vacios
+    if(e.idSeccion && e.idClase){
+        // Lee el archivo (ya que solo existe uno) para encontrar valores de fecha y asistentes
+        const datos = utlidades.leerArchivo(req.body.archivo)
+        
+        e.asistentes = datos.arregloFinal;
+        e.fechaSesion = datos.fecha;
+        
+        // Decide si reemplazar o ingresar
+        await asistencia.findOne({idSeccion:e.idSeccion,idClase:e.idClase,fechaSesion:e.fechaSesion},function(err,docs){
+            if(err){
+                res.status(503).send("Error al conectar a la base de datos.")
             }else{
-                // Ingresar
-                console.log("Me vine a ingresar.")
-                ingresar(e,res);
+                if(docs){
+                    // Reemplazar
+                    console.log("Me vine a reemplazar.")
+                    reemplazar(e,res);
+                }else{
+                    // Ingresar
+                    console.log("Me vine a ingresar.")
+                    ingresar(e,res);
+                }
             }
-        }
-    })
+        })
 
-    
+    }else{
+        res.status(503).send("No se enviaron los datos suficientes para insertar asistencias.")
+    }
 
 
 })
