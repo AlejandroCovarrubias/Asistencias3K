@@ -31,26 +31,36 @@ exports.leerArchivo = (archivo) => {
         // Encuentra la fecha
         var reg = /\d{4}-\d{2}-\d{2}/
         var index = archivo.search(reg)
+        // Si no encuentra la fecha, va pa fuera
+        if(index == -1){
+            return {
+                error: "Fecha no valida."
+            }
+        }
         var fecha = archivo.substr(index, 10)
-        //console.log(fecha)
-        // Quita la primeras cinco lineas (no se por que se ocupan tantas pero nomas asi me deja con los nombres)
-        for(var i = 0; i < 5; i++){
-            var linea = archivo.indexOf('\n')
-            if (linea == 0)
-              linea = +1;
-              console.log(linea)
-              archivo = archivo.substr(linea)
-          } 
-        //console.log(archivo)
+       
+        // Salta hasta la parte de nombres
+        reg = /([\wñáíúéóü]* )+[\wñáíúéóü]*[\t,]/
+        index = archivo.search(reg)
+        // Si no encuentra la seccion, va pa fuera
+        if(index == -1){
+            return {
+                error: "Lista de nombres no encontrada."
+            }
+        }
+
+        // Utiliza el archivo desde la parte de nombres
+        archivo = archivo.substring(index)
+
         // Convertir a arreglo
         const arregloFinal = [];
         // La neta nomas nos importan los nombres
         // Dividimos lo que sobra por saltos de linea
         var arreglo = archivo.split('\n')
-        //console.log(arreglo)
+        // console.log(arreglo)
         // Le quitamos todo el chuche para que nomas queden nombres en cada uno y los agregamos al final
         arreglo.forEach(el => {
-            var index = el.indexOf('\t')
+            var index = el.search(/[\t,]/)
             // Pasa el nombre todo a mayusculas para evitar repeticiones por eso
             var nombreNuevo = el.substring(0, index).toUpperCase();
             // Si esta vacio se va a la verch
@@ -63,6 +73,7 @@ exports.leerArchivo = (archivo) => {
 
         // regresa el arreglo
         console.log("FECHA:"+fecha)
+        console.log("Arreglo final: "+arregloFinal)
         return {
             arregloFinal,
             fecha

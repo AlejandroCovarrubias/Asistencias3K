@@ -151,6 +151,8 @@ export default class ModalArchivo extends React.Component {
                         } else if (response.status === 404) {
                             openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
                             //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
+                        } else if (response.status === 418){
+                            openAlert("Error con el documento", "Verifique que tenga fecha y una lista valida de estudiantes.")
                         }
                     })
                     .catch(
