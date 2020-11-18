@@ -38,11 +38,12 @@ export default class ModalArchivo extends React.Component {
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
         this.openAlert = this.openAlert.bind(this);
         this.changeState = this.changeState.bind(this);
+        this.resetStateAndCancel = this.resetStateAndCancel.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
     }
 
     doOptions = function (x) {
-        return <option key={x.id}>{x.nombre}</option>
+        return <option key={x.id} value={x.nombre}>{x.nombre}</option>
     };
 
     handleCursosChange = function (x) {
@@ -83,12 +84,6 @@ export default class ModalArchivo extends React.Component {
     handleOpenAlert = () => {
         this.setState({
             isOpenAlert: true,
-        });
-    }
-
-    handleClosingAlert() {
-        this.setState({
-            isOpenAlert: false,
         });
     }
 
@@ -151,8 +146,10 @@ export default class ModalArchivo extends React.Component {
                         } else if (response.status === 404) {
                             openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
                             //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
-                        } else if (response.status === 418){
-                            openAlert("Error con el documento", "Verifique que tenga fecha y una lista valida de estudiantes.")
+                        } else if (response.status === 418) {
+                            response.text().then(data =>
+                                openAlert("Error con el documento", data)
+                            )
                         }
                     })
                     .catch(
@@ -179,6 +176,19 @@ export default class ModalArchivo extends React.Component {
         this.setState({
             exito: true,
         })
+    }
+
+    resetStateAndCancel() {
+        this.setState({
+            isOpenDialogCursos: false,
+            isOpenModalArchivos: false,
+            isOpenAlert: false,
+            tituloAlerta: "",
+            mensajeAlerta: "",
+            exito: false,
+            files: [{ "name": "" }], // Crashea si esta vacio esto xd
+        })
+        this.props.closeAction()
     }
 
     handleClosingAlert() {
@@ -246,7 +256,7 @@ export default class ModalArchivo extends React.Component {
 
                             <div className="archivo-submit">
                                 <button className="generic-button" onClick={this.subirArchivo}>SUBIR</button>
-                                <button className="generic-button" onClick={this.props.closeAction}>CANCELAR</button>
+                                <button className="generic-button" onClick={this.resetStateAndCancel}>CANCELAR</button>
                             </div>
                         </div>
                     </DialogContent>

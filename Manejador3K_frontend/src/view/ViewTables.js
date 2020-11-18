@@ -2,7 +2,6 @@ import React from 'react';
 import '../style/App.css';
 
 import DataTable from './DataTable.js';
-import { RowCount } from '@material-ui/data-grid';
 
 export default class ModalArchivo extends React.Component {
     constructor(props) {
@@ -10,7 +9,6 @@ export default class ModalArchivo extends React.Component {
         this.state = {
         };
     }
-
 
     doTable = function (x) {
         //console.log(x);

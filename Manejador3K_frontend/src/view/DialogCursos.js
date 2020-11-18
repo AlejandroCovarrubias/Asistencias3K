@@ -39,6 +39,7 @@ export default class DialogCursos extends React.Component {
         this.handleClasesChange = this.handleClasesChange.bind(this);
         this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
+        this.resetStateAndCancel = this.resetStateAndCancel.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
@@ -46,10 +47,10 @@ export default class DialogCursos extends React.Component {
         event.preventDefault();
         var cursoE = document.getElementById('cursoNombre').value
 
-        if(!cursoE || !cursoE.trim()){
+        if (!cursoE || !cursoE.trim()) {
             //cursoE es nulo, undefined, or contiene solo espacios
             this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
-        } else if (cursoE === "") {  
+        } else if (cursoE === "") {
             this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
         } else {
             this.postCurso(cursoE)
@@ -85,6 +86,19 @@ export default class DialogCursos extends React.Component {
                 isOpenAlert: false,
             });
         }
+    }
+
+    resetStateAndCancel() {
+        this.setState({
+            nombre: "",
+            isOpenAlert: false,
+            exito: false,
+            tituloAlerta: "",
+            mensajeAlerta: "",
+            nuevoID: [],
+        })
+        document.getElementById('cursoNombre').value = "";
+        this.props.closeAction()
     }
 
     postCurso(nombreCurso) {
@@ -171,7 +185,7 @@ export default class DialogCursos extends React.Component {
                             </div>
                             <div className="cursos-submit">
                                 <button className="generic-button" onClick={this.onSubmit}>REGISTRAR CURSO</button>
-                                <button className="generic-button" onClick={this.props.closeAction}>CANCELAR</button>
+                                <button className="generic-button" onClick={this.resetStateAndCancel}>CANCELAR</button>
                             </div>
                         </div>
                     </DialogContent>

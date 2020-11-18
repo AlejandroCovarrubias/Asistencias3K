@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import MaterialTable from "material-table";
 
-function EditableTable(props) {
+function EditableTable(props, ref) {
 
   const [gridData, setGridData] = useState({
     title: props.title,
     data: props.rows,
     columns: props.cols,
-    resolve: () => {},
+    resolve: () => { },
   });
 
   useEffect(() => {
@@ -20,11 +20,11 @@ function EditableTable(props) {
       let data = [...gridData.data];
 
       data.push({ id: data.length, nombre: newData.nombre });
-      props.rows.push({id: data.length, nombre: newData.nombre });
+      props.rows.push({ id: data.length, nombre: newData.nombre });
 
       setGridData({ ...gridData, data, resolve });
     }
-  );
+    );
 
   const onRowUpdate = (newData, oldData) =>
     new Promise((resolve, reject) => {
@@ -33,24 +33,24 @@ function EditableTable(props) {
       // Obtener el indice editado
       let index = data.indexOf(oldData);
 
-      data[index] = {id: index + 1, nombre: newData.nombre};
-      props.rows[index] = newData; 
+      data[index] = { id: index + 1, nombre: newData.nombre };
+      props.rows[index] = newData;
 
       setGridData({ ...gridData, data, resolve });
     }
-  );
+    );
 
   const onRowDelete = oldData =>
     new Promise((resolve, reject) => {
       let data = [...gridData.data];
       let index = data.indexOf(oldData);
-      
+
       data.splice(index, 1);
       props.rows.splice(index, 1);
 
       setGridData({ ...gridData, data, resolve });
     }
-  );
+    );
 
   return (
     <MaterialTable

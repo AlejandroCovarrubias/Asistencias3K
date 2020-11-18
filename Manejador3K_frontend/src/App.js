@@ -135,7 +135,7 @@ class App extends React.Component {
             <select className="dropCursos" name="cursos" id="cursos" onChange={this.handleChangeCursoEscogido}>
               {this.state.listaCursos.map(this.doOptions)}
             </select>
-            <a>Selecciona el curso que deseas Editar, Eliminar o Filtrar</a>
+            <p>Selecciona el curso que deseas Editar, Eliminar o Filtrar</p>
           </div>
           <div className="filter-options">
             <button className="icon-button" onClick={this.abrirDialogoCursos}>
