@@ -10,8 +10,8 @@ export default class DataTable extends React.Component {
 
   render() {
     return (
-      <div style={{ height: 650, width: '100%' }}>
-        <DataGrid size='small' rows={this.props.rows} columns={this.props.columns} headerHeight={35} rowHeight={30} />
+      <div style={{ height: 500, width: '100%' }}>
+        <DataGrid size='small' rows={this.props.rows} columns={this.props.columns} headerHeight={35} rowHeight={25} />
       </div>
     );
   }

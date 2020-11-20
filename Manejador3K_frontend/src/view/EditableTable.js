@@ -1,12 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import MaterialTable from "material-table";
+import TextField from "@material-ui/core/TextField";
 
-function EditableTable(props, ref) {
+function EditableTable(props) {
+
+  const [nameError, setNameError] = useState({
+    error: false,
+    label: "",
+    helperText: "",
+    validateInput: false,
+  });
+
+  const cols = [
+    {
+      field: 'nombre',
+      title: 'Nombre',
+      width: 300,
+      editComponent: (props) => (
+        <TextField
+          type="text"
+          id="standard-error-helper-text"
+          error={nameError.validateInput}
+          label={nameError.validateInput ? nameError.label : ""}
+          helperText={nameError.validateInput ? nameError.helperText : ""}
+          fullWidth
+          value={props.value ? props.value : ""}
+          onChange={(e) => {
+            props.onChange(e.target.value);
+            if (nameError.validateInput) {
+              setNameError({
+                validateInput: false,
+              });
+            }
+          }}
+        />
+      ),
+    },
+  ];
 
   const [gridData, setGridData] = useState({
     title: props.title,
     data: props.rows,
-    columns: props.cols,
     resolve: () => { },
   });
 
@@ -17,28 +51,95 @@ function EditableTable(props, ref) {
 
   const onRowAdd = newData =>
     new Promise((resolve, reject) => {
-      let data = [...gridData.data];
+      setTimeout(() => {
+        let data = [...gridData.data];
 
-      data.push({ id: data.length, nombre: newData.nombre });
-      props.rows.push({ id: data.length, nombre: newData.nombre });
+        if (!newData.nombre || !newData.nombre.trim()) {
+          setNameError({
+            error: true,
+            label: "Requerido",
+            helperText: "Este campo es requerido",
+            validateInput: true,
+          });
+          reject();
+          return;
+        } else if (newData.nombre === '') {
+          setNameError({
+            error: true,
+            label: "Requerido",
+            helperText: "Este campo es requerido",
+            validateInput: true,
+          });
+          reject();
+          return;
+        } else if (newData.nombre.length > 30) {
+          setNameError({
+            error: true,
+            label: "Texto muy largo",
+            helperText: "Máximo 30 carácteres",
+            validateInput: true,
+          });
+          reject();
+          return;
+        }
 
-      setGridData({ ...gridData, data, resolve });
-    }
-    );
+        resolve();
+
+        data.push({ id: data.length, nombre: newData.nombre });
+        props.rows.push({ id: data.length, nombre: newData.nombre });
+
+        setGridData({ ...gridData, data, resolve });
+        setNameError({ error: false, label: "", helperText: "", validateInput: false,});
+      }, 600)
+    });
 
   const onRowUpdate = (newData, oldData) =>
     new Promise((resolve, reject) => {
-      // Copiar el estado actual de los datos en un array
-      let data = [...gridData.data];
-      // Obtener el indice editado
-      let index = data.indexOf(oldData);
+      setTimeout(() => {
+        // Copiar el estado actual de los datos en un array
+        let data = [...gridData.data];
 
-      data[index] = { id: index + 1, nombre: newData.nombre };
-      props.rows[index] = newData;
+        if (!newData.nombre || !newData.nombre.trim()) {
+          setNameError({
+            error: true,
+            label: "Requerido",
+            helperText: "Este campo es requerido",
+            validateInput: true,
+          });
+          reject();
+          return;
+        } else if (newData.nombre === '') {
+          setNameError({
+            error: true,
+            label: "Requerido",
+            helperText: "Este campo es requerido",
+            validateInput: true,
+          });
+          reject();
+          return;
+        } else if (newData.nombre.length > 30) {
+          setNameError({
+            error: true,
+            label: "Texto muy largo",
+            helperText: "Máximo 30 carácteres",
+            validateInput: true,
+          });
+          reject();
+          return;
+        }
 
-      setGridData({ ...gridData, data, resolve });
-    }
-    );
+        resolve();
+
+        // Obtener el indice editado
+        let index = data.indexOf(oldData);
+
+        data[index] = { id: index + 1, nombre: newData.nombre };
+        props.rows[index] = newData;
+
+        setGridData({ ...gridData, data, resolve });
+        setNameError({ error: false, label: "", helperText: "", validateInput: false,});
+      }, 600);
+    });
 
   const onRowDelete = oldData =>
     new Promise((resolve, reject) => {
@@ -49,20 +150,21 @@ function EditableTable(props, ref) {
       props.rows.splice(index, 1);
 
       setGridData({ ...gridData, data, resolve });
-    }
-    );
+    });
 
   return (
     <MaterialTable
       title={gridData.title}
-      columns={gridData.columns}
+      columns={cols}
       data={gridData.data}
       editable={{
         isEditable: rowData => true,
         isDeletable: rowData => true,
         onRowAdd: onRowAdd,
         onRowUpdate: onRowUpdate,
-        onRowDelete: onRowDelete
+        onRowDelete: onRowDelete,
+        onRowAddCancelled: rowData => setNameError({ error: false, label: "", helperText: "", validateInput: false, }),
+        onRowUpdateCancelled: rowData => setNameError({ error: false, label: "", helperText: "", validateInput: false, }),
       }}
       options={{
         pageSize: 4,

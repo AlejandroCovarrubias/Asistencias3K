@@ -20,8 +20,6 @@ export default class ModalArchivo extends React.Component {
         super(props);
 
         this.state = {
-            indexEscogido: 0,
-            indexEscogidoClases: 0,
             indexEscogidoSecciones: 0,
             isOpenDialogCursos: false,
             isOpenModalArchivos: false,
@@ -32,8 +30,6 @@ export default class ModalArchivo extends React.Component {
             files: [{ "name": "" }], // Crashea si esta vacio esto xd
         };
         this.subirArchivo = this.subirArchivo.bind(this);
-        this.handleCursosChange = this.handleCursosChange.bind(this);
-        this.handleClasesChange = this.handleClasesChange.bind(this);
         this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
         this.openAlert = this.openAlert.bind(this);
@@ -44,22 +40,6 @@ export default class ModalArchivo extends React.Component {
 
     doOptions = function (x) {
         return <option key={x.id} value={x.nombre}>{x.nombre}</option>
-    };
-
-    handleCursosChange = function (x) {
-        const { selectedIndex } = x.target.options;
-
-        this.setState({
-            indexEscogido: selectedIndex,
-        });
-    };
-
-    handleClasesChange = function (x) {
-        const { selectedIndex } = x.target.options;
-
-        this.setState({
-            indexEscogidoClases: selectedIndex,
-        });
     };
 
     handleSeccionesChange = function (x) {
@@ -91,10 +71,10 @@ export default class ModalArchivo extends React.Component {
         const openAlert = this.openAlert;
         const changeState = this.changeState;
 
-        var curso = this.props.lista[this.state.indexEscogido];
+        var curso = this.props.lista[this.props.indexCurso];
 
         if (curso.clases.length > 0 && curso.secciones.length > 0) {
-            var idClase = curso.clases[this.state.indexEscogidoClases].id
+            var idClase = curso.clases[this.props.indexClase].id
             var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
             //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
 
@@ -160,7 +140,7 @@ export default class ModalArchivo extends React.Component {
                         })
             }
         } else {
-            openAlert("Añade Clases y Secciones al Curso", "El Curso de " + this.props.lista[this.state.indexEscogido].nombre + " no tiene Clases y/o Secciones asignadas.");
+            openAlert("Añade Clases y Secciones al Curso", "El Curso de " + this.props.lista[this.state.indexCurso].nombre + " no tiene Clases y/o Secciones asignadas.");
         }
     };
 
@@ -202,6 +182,10 @@ export default class ModalArchivo extends React.Component {
         }
     }
 
+    checkProperties(){
+        return this.props.lista[this.props.indexCurso].clases[this.props.indexClase] === undefined;
+    }
+
     render() {
         return (
             <div>
@@ -218,6 +202,7 @@ export default class ModalArchivo extends React.Component {
                         <div className="modal-container">
                             <div className='encabezado-dialog'>
                                 <h2>Subir archivo de asistencia</h2>
+                                <p> {!this.checkProperties() && this.props.lista[this.props.indexCurso].nombre + " > " + this.props.lista[this.props.indexCurso].clases[this.props.indexClase].nombre} </p>
                                 <hr />
                             </div>
 
@@ -235,21 +220,10 @@ export default class ModalArchivo extends React.Component {
 
                             <div className="selects">
                                 <div className="selects-options">
-                                    <select
-                                        className="drop"
-                                        name="cursos"
-                                        id="cursos"
-
-                                        onChange={this.handleCursosChange}>
-                                        {this.props.lista.map(this.doOptions)}
-                                    </select>
-                                    <select className="drop" name="clases" id="clases"
-                                        onChange={this.handleClasesChange}>
-                                        {this.props.lista[this.state.indexEscogido].clases.map(this.doOptions)}
-                                    </select>
+                                    <p>Seleccionar sección</p>
                                     <select className="drop" name="secciones" id="secciones"
                                         onChange={this.handleSeccionesChange}>
-                                        {this.props.lista[this.state.indexEscogido].secciones.map(this.doOptions)}
+                                        {this.props.lista[this.props.indexCurso].secciones.map(this.doOptions)}
                                     </select>
                                 </div>
                             </div>

@@ -52,7 +52,11 @@ export default class DialogCursos extends React.Component {
             this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
         } else if (cursoE === "") {
             this.abrirAlert("Hay un problema con el nombre del curso", "El curso debe tener nombre. Rellena el campo.")
+        } else if (cursoE.length > 60) {
+            console.log('debo ser mayor que 60')
+            this.abrirAlert("Hay un problema con el nombre del curso", "El nombre del curso no puede tener más de 60 carácteres.")
         } else {
+            console.log('me voy a postear')
             this.postCurso(cursoE)
         }
     }
@@ -67,6 +71,7 @@ export default class DialogCursos extends React.Component {
         this.setState({
             secciones: seccionesData,
         });
+        console.log(this.state.secciones);
     }
 
     abrirAlert(titulo, mensaje) {

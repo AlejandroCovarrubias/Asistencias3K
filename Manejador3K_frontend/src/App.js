@@ -31,7 +31,8 @@ class App extends React.Component {
       tituloAlerta: "",
       mensajeAlerta: "",
       botonAlerta: "",
-      indexEscogido: 0,
+      indexCurso: 0,
+      indexClase: 0,
     };
 
     this.abrirDialogoCursos = this.abrirDialogoCursos.bind(this);
@@ -39,7 +40,8 @@ class App extends React.Component {
     this.abrirAlert = this.abrirAlert.bind(this);
     this.handleClosingDialog = this.handleClosingDialog.bind(this);
     this.handleClosingAlert = this.handleClosingAlert.bind(this);
-    this.handleChangeCursoEscogido = this.handleChangeCursoEscogido.bind(this);
+    this.handleChangeCurso = this.handleChangeCurso.bind(this);
+    this.handleChangeClase = this.handleChangeClase.bind(this);
   }
 
   componentDidMount() {
@@ -79,11 +81,19 @@ class App extends React.Component {
 
   abrirModalArchivos() {
     if (this.state.isCursosNotEmpty) {
-      this.setState({
-        isOpenModalArchivos: true,
-      });
-    }else{
-      this.abrirAlert("No se encontraron Cursos registrados", "Registra un Curso en el sistema para poder cargar asistencias.", "ACEPTAR");
+      if (this.state.listaCursos[this.state.indexCurso].clases.length > 0) {
+        if (this.state.listaCursos[this.state.indexCurso].secciones.length > 0) {
+          this.setState({
+            isOpenModalArchivos: true,
+          });
+        } else {
+          this.abrirAlert("No se encontraron secciones", "Un curso debe contener clases y secciones para poder cargar asistencias", "ACEPTAR");
+        }
+      } else {
+        this.abrirAlert("No se encontraron clases", "Un curso debe contener clases y secciones para poder cargar asistencias", "ACEPTAR");
+      }
+    } else {
+      this.abrirAlert("No se encontraron cursos registrados", "Registra un Curso en el sistema para poder cargar asistencias.", "ACEPTAR");
     }
   }
 
@@ -113,13 +123,19 @@ class App extends React.Component {
     this.fetchCursos();
   }
 
-  handleChangeCursoEscogido = function (x) {
+  handleChangeCurso = function (x) {
     const { selectedIndex } = x.target.options;
     this.setState({
-      indexEscogido: selectedIndex,
+      indexCurso: selectedIndex,
+      indexClase: 0,
     })
+  };
 
-    console.log(this.state.listaCursos[this.state.indexEscogido]);
+  handleChangeClase = function (x) {
+    const { selectedIndex } = x.target.options;
+    this.setState({
+      indexClase: selectedIndex,
+    })
   };
 
   render() {
@@ -132,10 +148,15 @@ class App extends React.Component {
 
         <div className="menu">
           <div className="dropApp">
-            <select className="dropCursos" name="cursos" id="cursos" onChange={this.handleChangeCursoEscogido}>
+            <select className="dropCursos" name="cursos" id="cursos" onChange={this.handleChangeCurso}>
               {this.state.listaCursos.map(this.doOptions)}
             </select>
             <p>Selecciona el curso que deseas Editar, Eliminar o Filtrar</p>
+          </div>
+          <div className="dropApp">
+            <select className="dropClases" name="clases" id="clases" onChange={this.handleChangeClase}>
+              {this.state.listaCursos[this.state.indexCurso].clases.map(this.doOptions)}
+            </select>
           </div>
           <div className="filter-options">
             <button className="icon-button" onClick={this.abrirDialogoCursos}>
@@ -159,8 +180,8 @@ class App extends React.Component {
 
         <div>
           <ViewTables
-            clases={this.state.listaCursos[this.state.indexEscogido].clases}
-            nombre={this.state.listaCursos[this.state.indexEscogido].nombre} />
+            clase={this.state.listaCursos[this.state.indexCurso].clases[this.state.indexClase]}
+            nombre={this.state.listaCursos[this.state.indexCurso].nombre} />
         </div>
 
         <DialogCursos
@@ -170,6 +191,8 @@ class App extends React.Component {
         <ModalArchivo
           open={this.state.isOpenModalArchivos}
           closeAction={this.handleClosingDialog}
+          indexCurso={this.state.indexCurso}
+          indexClase={this.state.indexClase}
           lista={this.state.listaCursos} />
         <DialogAlert
           open={this.state.isOpenAlert}

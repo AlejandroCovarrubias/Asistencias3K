@@ -40,6 +40,12 @@
     width: 310px;
 }
 
+.dropClases {
+    height: 50px;
+    margin-left: 5px;
+    width: 310px;
+}
+
 /* Dialogo de Cursos */
 
 .dialog-container {
@@ -142,6 +148,15 @@
     height: auto;
 }
 
+.encabezado-dialog h2 {
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+.encabezado-dialog p {
+    margin-bottom: 5px;
+}
+
 .drop {
     height: 30px;
     width: 200px;
@@ -200,11 +215,18 @@
 }
 
 .selects-options .drop {
-    width: 150px;
+    height: 50px;
+    width: 300px;
 }
 
 .upload-section {
     text-align: right;
+}
+
+.selects-options p {
+    margin: 0px;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 /* Botones */
@@ -263,7 +285,6 @@
 }
 
 .tables-container {
-    margin-bottom: 100px;
 }
 
 /* Color de celdas */

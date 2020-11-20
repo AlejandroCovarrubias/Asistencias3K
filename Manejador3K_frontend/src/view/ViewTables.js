@@ -19,54 +19,56 @@ export default class ModalArchivo extends React.Component {
         var rows = [];
         // Primera hilera son los headers
         // Nombre
-        cols.push({ field: 'nombre', headerName: 'Nombre del Alumno', width: 300 });
+        cols.push({ field: 'nombre', headerName: 'Nombre del Alumno', width: 400 });
 
-        // Sesiones
-        x.sesiones.forEach(element => {
-            console.log("Toy iterando")
-            console.log(element)
-            cols.push({ field: element.fechaSesion, headerName: element.fechaSesion, width: 150 });
-        });
+        if (x.sesiones !== undefined) {
+            // Sesiones
+            x.sesiones.forEach(element => {
+                console.log("Toy iterando")
+                console.log(element)
+                cols.push({ field: element.fechaSesion, headerName: element.fechaSesion, width: 150 });
+            });
 
-        // Ahora viene lo bueno, las hileras
-        // Vamos a iterar por alumnos
-        x.alumnos.forEach(function (alumno, index) {
-            console.log("Iterando por alumnos " + index)
-            var row = "{ \"id\":" + index + ", \"nombre\":\"" + alumno + "\"";
-            // Itera por sesiones para ver en cuales esta
-            x.sesiones.forEach(sesion => {
-                if (sesion.asistentes.includes(alumno)) {
-                    var fecha = ", \"" + sesion.fechaSesion + "\":\"✔\"";
-                    row = row + fecha;
-                } else {
-                    var fecha = ", \"" + sesion.fechaSesion + "\":\"X\"";
-                    row = row + fecha;
-                }
+            // Ahora viene lo bueno, las hileras
+            // Vamos a iterar por alumnos
+            x.alumnos.forEach(function (alumno, index) {
+                console.log("Iterando por alumnos " + index)
+                var row = "{ \"id\":" + index + ", \"nombre\":\"" + alumno + "\"";
+                // Itera por sesiones para ver en cuales esta
+                x.sesiones.forEach(sesion => {
+                    if (sesion.asistentes.includes(alumno)) {
+                        var fecha = ", \"" + sesion.fechaSesion + "\":\"✔\"";
+                        row = row + fecha;
+                    } else {
+                        var fecha = ", \"" + sesion.fechaSesion + "\":\"X\"";
+                        row = row + fecha;
+                    }
+                })
+                // Termina el objeto
+                row = row + " }"
+                console.log(row)
+                var rowN = JSON.parse(row)
+                console.log(rowN)
+                // Agrega al arreglo de hileras
+                rows.push(rowN);
             })
-            // Termina el objeto
-            row = row + " }"
-            console.log(row)
-            var rowN = JSON.parse(row)
-            console.log(rowN)
-            // Agrega al arreglo de hileras
-            rows.push(rowN);
-        })
-
-        return (
-            <div className="class">
-                <div className="class-name">
-                    <h5>{x.nombre}</h5>
-                    <hr />
+            
+            return (
+                <div className="class">
+                    <div className="class-name">
+                        <h5>{x.nombre}</h5>
+                        <hr />
+                    </div>
+                    <div className="class-table">
+                        <DataTable columns={cols} rows={rows} />
+                    </div>
                 </div>
-                <div className="class-table">
-                    <DataTable columns={cols} rows={rows} />
-                </div>
-            </div>
-        )
+            )
+        }
     }
 
     checkClasses() {
-        return this.props.clases.length > 0;
+        return this.props.clase === undefined;
     }
 
     render() {
@@ -78,12 +80,12 @@ export default class ModalArchivo extends React.Component {
                         <hr />
                     </div>
                     <div className="tables-container">
-                        {!this.checkClasses() &&
+                        {this.checkClasses() &&
                             <div className="no-classes">
                                 <p>Parece que no hay clases en este curso.</p>
                             </div>
                         }
-                        {this.props.clases.map(this.doTable)}
+                        {!this.checkClasses() && this.doTable(this.props.clase)}
                     </div>
                 </div>
             </div>
