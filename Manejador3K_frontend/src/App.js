@@ -97,11 +97,11 @@ class App extends React.Component {
     }
   }
 
-  abrirAlert(titulo, mensaje, boton) {
+  abrirAlert(title, content, button) {
     this.setState({
-      tituloAlerta: titulo,
-      mensajeAlerta: mensaje,
-      botonAlerta: boton,
+      tituloAlerta: title,
+      mensajeAlerta: content,
+      botonAlerta: button,
       isOpenAlert: true,
     });
   }
@@ -197,8 +197,8 @@ class App extends React.Component {
         <DialogAlert
           open={this.state.isOpenAlert}
           closeAction={this.handleClosingAlert}
-          titulo={this.state.tituloAlerta}
-          mensaje={this.state.mensajeAlerta}
+          title={this.state.tituloAlerta}
+          content={this.state.mensajeAlerta}
           buttonText={this.state.botonAlerta} />
       </div>
     );

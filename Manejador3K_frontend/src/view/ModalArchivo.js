@@ -7,6 +7,7 @@ import Slide from '@material-ui/core/Slide';
 
 import DragAndDrop from './DragAndDrop.js';
 import DialogAlert from './DialogAlert.js';
+import DialogConfirm from './DialogConfirm.js';
 
 
 const DEFAULTURL = 'http://localhost:8080';
@@ -14,6 +15,8 @@ const DEFAULTURL = 'http://localhost:8080';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
+var readedData = [];
 
 export default class ModalArchivo extends React.Component {
     constructor(props) {
@@ -24,18 +27,25 @@ export default class ModalArchivo extends React.Component {
             isOpenDialogCursos: false,
             isOpenModalArchivos: false,
             isOpenAlert: false,
+            isOpenConfirm: false,
             tituloAlerta: "",
             mensajeAlerta: "",
             exito: false,
             files: [{ "name": "" }], // Crashea si esta vacio esto xd
+            filesNames: [],
+            problems: [],
         };
         this.subirArchivo = this.subirArchivo.bind(this);
         this.handleSeccionesChange = this.handleSeccionesChange.bind(this);
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
+        this.handleClosingConfirm = this.handleClosingConfirm.bind(this);
         this.openAlert = this.openAlert.bind(this);
+        this.openConfirm = this.openConfirm.bind(this);
+        this.confirmSubir = this.confirmSubir.bind(this);
         this.changeState = this.changeState.bind(this);
         this.resetStateAndCancel = this.resetStateAndCancel.bind(this);
         this.handleDrop = this.handleDrop.bind(this);
+        this.readFileAsText = this.readFileAsText.bind(this);
     }
 
     doOptions = function (x) {
@@ -52,13 +62,18 @@ export default class ModalArchivo extends React.Component {
 
     //Maneja los archivos
     handleDrop = (files) => {
-        let fileList = this.state.files
-        fileList = []
+        let fileList = [];
+        let fileListNames = [];
 
-        console.log(files[0])
-        fileList.push(files[0])
+        for (var i = 0; i < files.length; i++) {
+            if (!files[i].name) return
+            fileListNames.push(files[i].name)
+        }
 
-        this.setState({ files: fileList });
+        console.log(fileListNames)
+        fileList.push(files)
+
+        this.setState({ files: fileList, filesNames: fileListNames });
     }
 
     handleOpenAlert = () => {
@@ -68,6 +83,10 @@ export default class ModalArchivo extends React.Component {
     }
 
     subirArchivo() {
+        this.setState({
+            isOpenConfirm: false,
+        })
+
         const openAlert = this.openAlert;
         const changeState = this.changeState;
 
@@ -78,77 +97,99 @@ export default class ModalArchivo extends React.Component {
             var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
             //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
 
-            var file = this.state.files[0];
-            // Leer el archivo y convertirlo a texto para mandarlo
-            var lector = new FileReader()
+            const archivos = this.state.files;
+            var resultados = [];
 
-            if (file != null && file.size > 0) {
-                //console.log(file);
-                lector.readAsText(file)
-            } else {
+            console.log(archivos)
+            if (archivos[0].length < 0) {
                 this.openAlert("No se encontró ningun documento", "Arrastra un documento .CSV o cárgalo directamente.");
                 return
             }
 
-            // Cacha error de lectura
-            lector.onerror = function (e) {
-                this.openAlert("No se ha podido leer el documento", "Hubo un problema al momento de leer el documento.")
-                //alert("Hubo un error con la lectura del documento.\n" + lector.error)
-                lector.abort();
-            }
 
-            // Envia los datos cuando termine de leer el documento
-            lector.onload = function (e) {
-
-                const data = {
-                    idClase: idClase,
-                    idSeccion: idSeccion,
-                    archivo: lector.result
-                }
-
-                fetch(DEFAULTURL + '/asistencias', {
-                    method: 'POST',
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    credentials: 'same-origin',
-                    redirect: 'follow',
-                    referrerPolicy: 'no-referrer',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            openAlert("Asistencias registradas", "La lista asistencias ha sido guardada.")
-                            changeState()
-                            //alert("Asistencias registradas correctamente.");
-                        } else if (response.status === 404) {
-                            openAlert("Error de búsqueda", "La clase y sección seleccionadas no han sido encontradas.")
-                            //alert("Error de busqueda" + "\nLa clase o seccion seleccionada no existen.");
-                        } else if (response.status === 418) {
-                            response.text().then(data =>
-                                openAlert("Error con el documento", data)
-                            )
-                        }
-                    })
-                    .catch(
-                        error => {
-                            openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
-                            //alert("Conexión Rechazada" + "\nLa conexión con el servidor ha sido rechazada. Intente nuevamente.");
-                            console.log(error);
+            readedData = [];
+            var fetches = []
+            Promise.all(archivos[0].map((file) => {
+                this.readFileAsText(file, idClase, idSeccion)
+            })).then((results) => {
+                Promise.all(results.map(result => {
+                    console.log(result);
+                })).then(() => {
+                    Promise.all(readedData.map(data => {
+                        fetch(DEFAULTURL + '/asistencias', {
+                            method: 'POST',
+                            mode: 'cors',
+                            cache: 'no-cache',
+                            credentials: 'same-origin',
+                            redirect: 'follow',
+                            referrerPolicy: 'no-referrer',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
                         })
-            }
+                    })).then(responses => {
+                        return Promise.all(responses.map(response => {
+                            if (response.status === 200) {
+                                console.log("me subi")
+                                resultados.push("La lista de asistencias ha sido registrada")
+                            } else if (response.status === 404) {
+                                console.log("no me subi")
+                                resultados.push("La clase y seccion seleccionada no existe")
+                            } else if (response.status === 418) {
+                                response.text().then(data => {
+                                    console.log("no me subi y hubo un error en el documento")
+                                    resultados.push(data)
+                                })
+                            }
+                        }))
+                    }).then(() => {
+                        console.log("me cumpli chinguesu")
+                        console.log(resultados)
+                        openAlert("Resultados", "", resultados);
+                        //cambiar estado
+                    }).catch(error => {
+                        openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
+                    })
+                })
+            })
+
+
         } else {
             openAlert("Añade Clases y Secciones al Curso", "El Curso de " + this.props.lista[this.state.indexCurso].nombre + " no tiene Clases y/o Secciones asignadas.");
         }
     };
 
-    openAlert(titulo, mensaje) {
+    readFileAsText(file, idClase, idSeccion) {
+        return new Promise((resolve, reject) => {
+            const lector = new FileReader();
+            lector.onerror = reject;
+            lector.onload = (e) => {
+                var dat = {
+                    idClase: idClase,
+                    idSeccion: idSeccion,
+                    archivo: lector.result
+                }
+
+                readedData.push(dat)
+                resolve(dat)
+            }
+            lector.readAsText(file);
+        })
+    }
+
+    openAlert(title, content, contentList) {
         this.setState({
-            tituloAlerta: titulo,
-            mensajeAlerta: mensaje,
+            tituloAlerta: title,
+            mensajeAlerta: content,
+            problems: contentList,
             isOpenAlert: true,
+        });
+    }
+
+    openConfirm(title, content) {
+        this.setState({
+            isOpenConfirm: true,
         });
     }
 
@@ -167,6 +208,7 @@ export default class ModalArchivo extends React.Component {
             mensajeAlerta: "",
             exito: false,
             files: [{ "name": "" }], // Crashea si esta vacio esto xd
+            filesNames: [],
         })
         this.props.closeAction()
     }
@@ -182,7 +224,17 @@ export default class ModalArchivo extends React.Component {
         }
     }
 
-    checkProperties(){
+    handleClosingConfirm() {
+        this.setState({
+            isOpenConfirm: false,
+        });
+    }
+
+    confirmSubir() {
+        this.openConfirm("", "");
+    }
+
+    checkProperties() {
         return this.props.lista[this.props.indexCurso].clases[this.props.indexClase] === undefined;
     }
 
@@ -209,8 +261,8 @@ export default class ModalArchivo extends React.Component {
                             <DragAndDrop
                                 handleDrop={this.handleDrop}
                                 handleOpenAlert={this.handleOpenAlert}>
-                                <div >
-                                    <div >{this.state.files[0].name}</div>
+                                <div>
+                                    {this.state.filesNames.map((file) => <div>{file}</div>)}
                                 </div>
                             </DragAndDrop>
 
@@ -229,7 +281,7 @@ export default class ModalArchivo extends React.Component {
                             </div>
 
                             <div className="archivo-submit">
-                                <button className="generic-button" onClick={this.subirArchivo}>SUBIR</button>
+                                <button className="generic-button" onClick={this.confirmSubir}>SUBIR</button>
                                 <button className="generic-button" onClick={this.resetStateAndCancel}>CANCELAR</button>
                             </div>
                         </div>
@@ -237,9 +289,23 @@ export default class ModalArchivo extends React.Component {
                     <DialogAlert
                         open={this.state.isOpenAlert}
                         closeAction={this.handleClosingAlert}
-                        titulo={this.state.tituloAlerta}
-                        mensaje={this.state.mensajeAlerta}
+                        title={this.state.tituloAlerta}
+                        content={this.state.mensajeAlerta}
+                        contentList={this.state.problems}
                         buttonText={"ACEPTAR"} />
+                    <DialogConfirm
+                        open={this.state.isOpenConfirm}
+                        title={"¿Desea subir el siguiente contenido?"}
+                        titleContent={!this.checkProperties() &&
+                            this.props.lista[this.props.indexCurso].nombre + " > "
+                            + this.props.lista[this.props.indexCurso].clases[this.props.indexClase].nombre + " > "
+                            + this.props.lista[this.props.indexCurso].secciones[this.state.indexEscogidoSecciones].nombre}
+                        contentList={this.state.filesNames}
+                        yesAction={this.subirArchivo}
+                        yesButtonText={"CONFIRMAR"}
+                        noAction={this.handleClosingConfirm}
+                        noButtonText={"CANCELAR"}
+                    />
                 </Dialog>
             </div>
         )
