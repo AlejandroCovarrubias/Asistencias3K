@@ -114,73 +114,78 @@ export default class ModalArchivo extends React.Component {
 
                 // Guarda la lista de promesas de fetch
                 var promesasFetch = [];
-                results.forEach(result => {
-                    promesasFetch.push(
-                        fetch(DEFAULTURL + '/asistencias', {
-                            method: 'POST',
-                            mode: 'cors',
-                            cache: 'no-cache',
-                            credentials: 'same-origin',
-                            redirect: 'follow',
-                            referrerPolicy: 'no-referrer',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(result),
-                        })
-                    )
-                })
-            
-                // Espera a que se hagan todas las promesas y da resultados con callback
-                Promise.all(promesasFetch).then(responses =>{
 
-                    // Guarda la lista de promesas de lectura de resultados de fetch
-                    var promesasData = [];
-
-                    responses.forEach(response =>{
-
-                        console.log(responses)
-
-                        promesasData.push(new Promise((resolve, reject) => {
-                            if (response.status === 200) {
-                                resolve("La lista de asistencias ha sido registrada")
-                            } else if (response.status === 404) {
-                                resolve("La clase y seccion seleccionada no existe")
-                            } else if (response.status === 418) {
-                                response.text().then(data => {
-                                    resolve(data)
-                                })
-                            }
-                        }))                        
+                const fetchear = (data) =>{
+                    var elFetch = fetch(DEFAULTURL + '/asistencias', {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        credentials: 'same-origin',
+                        redirect: 'follow',
+                        referrerPolicy: 'no-referrer',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
                     })
+                    promesasFetch.push(elFetch)
+                    return elFetch;
+                }
 
-                    // Espera a que se hagan todas las promesas y da resultados con callback
-                    Promise.all(promesasData).then(data =>{
-                        
-                        var newData = []
+                const doNextPromise = index =>{
+                    fetchear(results[index]).then(x =>{
+                        index++;
+                        if(index< results.length){
+                            doNextPromise(index)
+                        }else{
+                            console.log(promesasFetch)
+                            // Espera a que se hagan todas las promesas y da resultados con callback
+                            Promise.all(promesasFetch).then(responses =>{
 
-                        // Empareja nombres con data
-                        archivos[0].forEach(function(archivo,index){
-                            this.push(archivo.name +" : "+data[index])
-                        },newData)
+                                // Guarda la lista de promesas de lectura de resultados de fetch
+                                var promesasData = [];
 
-                        // Muestra resultados
-                        console.log(newData)
-                        openAlert("Resultados", "", newData);
-                    });
+                                responses.forEach(response =>{
 
-                    
-                })
+                                    console.log(responses)
 
-                    // Promise.all(results.map(data => {
-                        
-                    // })).then(responses => {
-                    //     return Promise.all(responses.map(response => {
-                            
-                    //     cambiar estado
-                    // }).catch(error => {
-                    //     openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
-                    // })
+                                    promesasData.push(new Promise((resolve, reject) => {
+                                        if (response.status === 200) {
+                                            resolve("La lista de asistencias ha sido registrada")
+                                        } else if (response.status === 404) {
+                                            resolve("La clase y seccion seleccionada no existe")
+                                        } else if (response.status === 418) {
+                                            response.text().then(data => {
+                                                resolve(data)
+                                            })
+                                        }
+                                    }))                        
+                                })
+
+                                // Espera a que se hagan todas las promesas y da resultados con callback
+                                Promise.all(promesasData).then(data =>{
+                                    
+                                    var newData = []
+
+                                    // Empareja nombres con data
+                                    archivos[0].forEach(function(archivo,index){
+                                        this.push(archivo.name +" : "+data[index])
+                                    },newData)
+
+                                    // Muestra resultados
+                                    console.log(newData)
+                                    openAlert("Resultados", "", newData);
+                                });
+
+                                
+                            })
+                                    }
+                                })
+                }
+
+                doNextPromise(0);
+
+                
                 
             }).catch((error) => {
                 alert("Error al leer los archivos. "+error)
