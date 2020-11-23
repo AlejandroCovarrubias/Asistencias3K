@@ -13,6 +13,10 @@ export default class DragAndDrop extends React.Component {
             drag: false,
             isOpenAlert: false,
             invalidNames: [],
+            title: "",
+            titleContent: "",
+            subtitle: "",
+            content: "",
         }
 
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
@@ -50,7 +54,34 @@ export default class DragAndDrop extends React.Component {
 
         console.log(fil);
 
-        if(fil !== undefined){
+        if (fil.length > 10) {
+            this.handleOpenAlert("Limite de carga de archivos superados",
+                "",
+                "",
+                "Solo se permite cargar hasta 10 archivos a la vez");
+            return
+        }
+
+        //2MB
+        const maxAllowedSize = 2 * 1024 * 1024;
+        var bigFiles = [];
+        if (fil !== undefined) {
+            for(var i = 0; i > fil.length; i++){
+                console.log(fil[i].size)
+                if (fil[i].size > maxAllowedSize) {
+                    bigFiles.push(fil[i]);
+                }
+            }
+        }
+
+        if (bigFiles.length > 0) {
+            this.handleOpenAlert("Limite de tamaño de carga superado",
+                "Tamaño máximo de carga: 2MB",
+                "Los siguientes archivos pesan más que el límite de carga permitido:",
+                "", bigFiles);
+        }
+
+        if (fil !== undefined) {
             const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
 
             for (var i = 0; i < fil.length; i++) {
@@ -64,8 +95,11 @@ export default class DragAndDrop extends React.Component {
                 }
             }
 
-            if(invalidFil.length > 0){
-                this.handleOpenAlert(invalidFil);
+            if (invalidFil.length > 0) {
+                this.handleOpenAlert("Formato de Archivo no permitido",
+                    "Formatos permitidos: CSV",
+                    "Los siguientes archivos tienen un formato no permitido:",
+                    "", invalidFil);
             }
 
             e.preventDefault();
@@ -84,6 +118,32 @@ export default class DragAndDrop extends React.Component {
         var validFil = [];
         var invalidFil = [];
 
+        if (fil.length > 10) {
+            this.handleOpenAlert("Limite de carga de archivos superados",
+                "",
+                "",
+                "Solo se permite cargar hasta 10 archivos a la vez");
+            return
+        }
+
+        //2MB
+        const maxAllowedSize = 2 * 1024 * 1024;
+        var bigFiles = [];
+        if (fil !== undefined) {
+            for(var i = 0; i > fil.length; i++){
+                if (fil[i].size > maxAllowedSize) {
+                    bigFiles.push(fil[i]);
+                }
+            }
+        }
+
+        if (bigFiles.length > 0) {
+            this.handleOpenAlert("Limite de tamaño de carga superado",
+                "Tamaño máximo de carga: 2MB",
+                "Los siguientes archivos pesan más que el límite de carga permitido:",
+                "", bigFiles);
+        }
+
         console.log(fil);
         if (fil !== undefined) {
             const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
@@ -99,8 +159,11 @@ export default class DragAndDrop extends React.Component {
                 }
             }
 
-            if(invalidFil.length > 0){
-                this.handleOpenAlert(invalidFil);
+            if (invalidFil.length > 0) {
+                this.handleOpenAlert("Formato de Archivo no permitido",
+                    "Formatos permitidos: CSV",
+                    "Los siguientes archivos tienen un formato no permitido:",
+                    "", invalidFil);
             }
 
             e.preventDefault()
@@ -132,16 +195,22 @@ export default class DragAndDrop extends React.Component {
     fileUploadAction = () => this.inputReference.current.click();
     fileUploadInputChange = (e) => this.handleFileUpload(e);
 
-    handleOpenAlert = (invalidFils) => {
+    handleOpenAlert = (title, titleContent, subtitle, content, invalidFils) => {
         var invalidFilsNames = [];
 
-        for (var i = 0; i < invalidFils.length; i++) {
-            invalidFilsNames.push(invalidFils[i].name);
+        if (invalidFils !== undefined) {
+            for (var i = 0; i < invalidFils.length; i++) {
+                invalidFilsNames.push(invalidFils[i].name);
+            }
         }
 
         this.setState({
             isOpenAlert: true,
             invalidNames: invalidFilsNames,
+            title: title,
+            content: content,
+            titleContent: titleContent,
+            subtitle: subtitle,
         });
     }
 
@@ -167,7 +236,7 @@ export default class DragAndDrop extends React.Component {
                     {this.props.children}
                 </div>
                 <div className="upload-section">
-                    <input type="file" hidden ref={this.inputReference} onChange={this.fileUploadInputChange} multiple="multiple"/>
+                    <input type="file" hidden ref={this.inputReference} onChange={this.fileUploadInputChange} multiple="multiple" />
                     <button className="upload-button" onClick={this.fileUploadAction}>
                         SUBIR ARCHIVO
                     </button>
@@ -175,9 +244,10 @@ export default class DragAndDrop extends React.Component {
                 <DialogAlert
                     open={this.state.isOpenAlert}
                     closeAction={this.handleClosingAlert}
-                    title={"Formato de Archivo no permitido"}
-                    titleContent={"Formatos permitidos: CSV"}
-                    subtitle={"Los siguientes archivos tienen un formato no permitido:"}
+                    title={this.state.title}
+                    titleContent={this.state.titleContent}
+                    subtitle={this.state.subtitle}
+                    content={this.state.content}
                     contentList={this.state.invalidNames}
                     buttonText={"ACEPTAR"} />
             </div>
