@@ -95,27 +95,27 @@ export default class ModalArchivo extends React.Component {
         if (curso.clases.length > 0 && curso.secciones.length > 0) {
             var idClase = curso.clases[this.props.indexClase].id
             var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
-            //alert("Hola amigo, estas mandando al POST los siguientes datos:\nIDCURSO:"+idCurso+"\nIDCLASE:"+idClase+"\nIDSECCION:"+idSeccion+"\nARCHIVO:"+this.state.files[0].name)
-
             const archivos = this.state.files;
-            var resultados = [];
 
-            console.log(archivos)
             if (archivos[0].length < 0) {
                 this.openAlert("No se encontró ningun documento", "Arrastra un documento .CSV o cárgalo directamente.");
                 return
             }
 
+            // Guarda la lista de promesas de leer archivos, el resultado deberia ser un arreglo
+            // de promesas con resultado de JSON con los datos a mandar con fetch
+            var promesasArchivos = [];
+            archivos[0].forEach( file =>{
+                promesasArchivos.push(this.readFileAsText(file,idClase,idSeccion))
+            })
 
-            readedData = [];
-            var fetches = []
-            Promise.all(archivos[0].map((file) => {
-                this.readFileAsText(file, idClase, idSeccion)
-            })).then((results) => {
-                Promise.all(results.map(result => {
-                    console.log(result);
-                })).then(() => {
-                    Promise.all(readedData.map(data => {
+            // Espera a que se hagan todas las promesas y da resultados con callback
+            Promise.all(promesasArchivos).then((results) => {
+
+                // Guarda la lista de promesas de fetch
+                var promesasFetch = [];
+                results.forEach(result => {
+                    promesasFetch.push(
                         fetch(DEFAULTURL + '/asistencias', {
                             method: 'POST',
                             mode: 'cors',
@@ -126,32 +126,64 @@ export default class ModalArchivo extends React.Component {
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify(data),
+                            body: JSON.stringify(result),
                         })
-                    })).then(responses => {
-                        return Promise.all(responses.map(response => {
+                    )
+                })
+            
+                // Espera a que se hagan todas las promesas y da resultados con callback
+                Promise.all(promesasFetch).then(responses =>{
+
+                    // Guarda la lista de promesas de lectura de resultados de fetch
+                    var promesasData = [];
+
+                    responses.forEach(response =>{
+
+                        console.log(responses)
+
+                        promesasData.push(new Promise((resolve, reject) => {
                             if (response.status === 200) {
-                                console.log("me subi")
-                                resultados.push("La lista de asistencias ha sido registrada")
+                                resolve("La lista de asistencias ha sido registrada")
                             } else if (response.status === 404) {
-                                console.log("no me subi")
-                                resultados.push("La clase y seccion seleccionada no existe")
+                                resolve("La clase y seccion seleccionada no existe")
                             } else if (response.status === 418) {
                                 response.text().then(data => {
-                                    console.log("no me subi y hubo un error en el documento")
-                                    resultados.push(data)
+                                    resolve(data)
                                 })
                             }
-                        }))
-                    }).then(() => {
-                        console.log("me cumpli chinguesu")
-                        console.log(resultados)
-                        openAlert("Resultados", "", resultados);
-                        //cambiar estado
-                    }).catch(error => {
-                        openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
+                        }))                        
                     })
+
+                    // Espera a que se hagan todas las promesas y da resultados con callback
+                    Promise.all(promesasData).then(data =>{
+                        
+                        var newData = []
+
+                        // Empareja nombres con data
+                        archivos[0].forEach(function(archivo,index){
+                            this.push(archivo.name +" : "+data[index])
+                        },newData)
+
+                        // Muestra resultados
+                        console.log(newData)
+                        openAlert("Resultados", "", newData);
+                    });
+
+                    
                 })
+
+                    // Promise.all(results.map(data => {
+                        
+                    // })).then(responses => {
+                    //     return Promise.all(responses.map(response => {
+                            
+                    //     cambiar estado
+                    // }).catch(error => {
+                    //     openAlert("Conexión Rechazada", "La conexión con el servidor ha sido rechazada. Intente nuevamente.")
+                    // })
+                
+            }).catch((error) => {
+                alert("Error al leer los archivos. "+error)
             })
 
 
@@ -170,8 +202,6 @@ export default class ModalArchivo extends React.Component {
                     idSeccion: idSeccion,
                     archivo: lector.result
                 }
-
-                readedData.push(dat)
                 resolve(dat)
             }
             lector.readAsText(file);
