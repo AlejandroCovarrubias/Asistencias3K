@@ -97,7 +97,9 @@ export default class ModalArchivo extends React.Component {
             var idSeccion = curso.secciones[this.state.indexEscogidoSecciones].id
             const archivos = this.state.files;
 
-            if (archivos[0].length < 0) {
+            console.log(archivos[0].name)
+
+            if (archivos[0].name === '') {
                 this.openAlert("No se encontró ningun documento", "Arrastra un documento .CSV o cárgalo directamente.");
                 return
             }
@@ -105,8 +107,8 @@ export default class ModalArchivo extends React.Component {
             // Guarda la lista de promesas de leer archivos, el resultado deberia ser un arreglo
             // de promesas con resultado de JSON con los datos a mandar con fetch
             var promesasArchivos = [];
-            archivos[0].forEach( file =>{
-                promesasArchivos.push(this.readFileAsText(file,idClase,idSeccion))
+            archivos[0].forEach(file => {
+                promesasArchivos.push(this.readFileAsText(file, idClase, idSeccion))
             })
 
             // Espera a que se hagan todas las promesas y da resultados con callback
@@ -115,7 +117,7 @@ export default class ModalArchivo extends React.Component {
                 // Guarda la lista de promesas de fetch
                 var promesasFetch = [];
 
-                const fetchear = (data) =>{
+                const fetchear = (data) => {
                     var elFetch = fetch(DEFAULTURL + '/asistencias', {
                         method: 'POST',
                         mode: 'cors',
@@ -132,20 +134,20 @@ export default class ModalArchivo extends React.Component {
                     return elFetch;
                 }
 
-                const doNextPromise = index =>{
-                    fetchear(results[index]).then(x =>{
+                const doNextPromise = index => {
+                    fetchear(results[index]).then(x => {
                         index++;
-                        if(index< results.length){
+                        if (index < results.length) {
                             doNextPromise(index)
-                        }else{
+                        } else {
                             console.log(promesasFetch)
                             // Espera a que se hagan todas las promesas y da resultados con callback
-                            Promise.all(promesasFetch).then(responses =>{
+                            Promise.all(promesasFetch).then(responses => {
 
                                 // Guarda la lista de promesas de lectura de resultados de fetch
                                 var promesasData = [];
 
-                                responses.forEach(response =>{
+                                responses.forEach(response => {
 
                                     console.log(responses)
 
@@ -159,39 +161,32 @@ export default class ModalArchivo extends React.Component {
                                                 resolve(data)
                                             })
                                         }
-                                    }))                        
+                                    }))
                                 })
-
                                 // Espera a que se hagan todas las promesas y da resultados con callback
-                                Promise.all(promesasData).then(data =>{
-                                    
+                                Promise.all(promesasData).then(data => {
                                     var newData = []
 
                                     // Empareja nombres con data
-                                    archivos[0].forEach(function(archivo,index){
-                                        this.push(archivo.name +" : "+data[index])
-                                    },newData)
+                                    archivos[0].forEach(function (archivo, index) {
+                                        this.push(archivo.name + " : " + data[index])
+                                    }, newData)
 
                                     // Muestra resultados
                                     console.log(newData)
-                                    openAlert("Resultados", "", newData);
+                                    openAlert("Resultados de la carga de archivos", "", newData);
+                                    changeState();
                                 });
 
-                                
+
                             })
-                                    }
-                                })
+                        }
+                    })
                 }
-
                 doNextPromise(0);
-
-                
-                
             }).catch((error) => {
-                alert("Error al leer los archivos. "+error)
+                alert("Error al leer los archivos. " + error)
             })
-
-
         } else {
             openAlert("Añade Clases y Secciones al Curso", "El Curso de " + this.props.lista[this.state.indexCurso].nombre + " no tiene Clases y/o Secciones asignadas.");
         }
