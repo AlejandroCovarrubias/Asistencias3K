@@ -89,7 +89,7 @@ function EditableTable(props) {
         props.rows.push({ id: data.length, nombre: newData.nombre });
 
         setGridData({ ...gridData, data, resolve });
-        setNameError({ error: false, label: "", helperText: "", validateInput: false,});
+        setNameError({ error: false, label: "", helperText: "", validateInput: false, });
       }, 600)
     });
 
@@ -137,7 +137,7 @@ function EditableTable(props) {
         props.rows[index] = newData;
 
         setGridData({ ...gridData, data, resolve });
-        setNameError({ error: false, label: "", helperText: "", validateInput: false,});
+        setNameError({ error: false, label: "", helperText: "", validateInput: false, });
       }, 600);
     });
 

@@ -12,6 +12,7 @@ export default class DragAndDrop extends React.Component {
         this.state = {
             drag: false,
             isOpenAlert: false,
+            invalidNames: [],
         }
 
         this.handleClosingAlert = this.handleClosingAlert.bind(this);
@@ -43,66 +44,71 @@ export default class DragAndDrop extends React.Component {
     }
 
     handleDrop = (e) => {
-        const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
-        const { type } = e.dataTransfer.files[0];
+        var fil = e.dataTransfer.files;
+        var validFil = [];
+        var invalidFil = [];
 
-        console.log(type);
-        if (supportedFilesTypes.indexOf(type) > -1) {
-            //Lee el archivo
-            const reader = new FileReader();
-            reader.readAsDataURL(e.dataTransfer.files[0])
+        console.log(fil);
 
-            e.preventDefault()
-            e.stopPropagation()
+        if(fil !== undefined){
+            const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
+
+            for (var i = 0; i < fil.length; i++) {
+                const { type } = fil[i];
+
+                if (supportedFilesTypes.indexOf(type) > -1) {
+                    //Lo agrega a la nueva lista
+                    validFil.push(fil[i]);
+                } else {
+                    invalidFil.push(fil[i]);
+                }
+            }
+
+            if(invalidFil.length > 0){
+                this.handleOpenAlert(invalidFil);
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
             this.setState({ drag: false })
-            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                this.props.handleDrop(e.dataTransfer.files)
-                e.dataTransfer.clearData()
+            if (validFil && validFil.length > 0) {
+                this.props.handleDrop(validFil)
+                e.dataTransfer.clearData();
                 this.dragCounter = 0
             }
-        } else {
-            //Hacer que te de el mensaje
-            this.handleOpenAlert();
-            e.preventDefault()
-            e.stopPropagation()
-            this.setState({ drag: false })
         }
     }
 
     handleFileUpload(e) {
-        var fil = e.target.files[0];
-        
+        var fil = e.target.files;
+        var validFil = [];
+        var invalidFil = [];
+
         console.log(fil);
         if (fil !== undefined) {
             const supportedFilesTypes = ['text/csv', 'application/vnd.ms-excel'];
-            const { type } = fil;
 
-            //console.log(type);
-            if (supportedFilesTypes.indexOf(type) > -1) {
-                //Lee el archivo
-                const reader = new FileReader();
-                reader.readAsDataURL(e.target.files[0])
+            for (var i = 0; i < fil.length; i++) {
+                const { type } = fil[i];
 
-
-                //Cambiar de sitio
-                const payload = new FormData();
-                payload.append('file', e.target.files[0]);
-
-                const xhr = new XMLHttpRequest();
-
-                xhr.open('POST', 'http://localhost:8080/uploadFile');
-                xhr.send(payload);
-
-                e.preventDefault()
-                e.stopPropagation()
-                this.setState({ drag: false })
-                if (e.target.files && e.target.files.length > 0) {
-                    this.props.handleDrop(e.target.files)
-                    this.dragCounter = 0
+                if (supportedFilesTypes.indexOf(type) > -1) {
+                    //Lo agrega a la nueva lista
+                    validFil.push(fil[i]);
+                } else {
+                    invalidFil.push(fil[i]);
                 }
-            } else {
-                //Hacer que te de el mensaje
-                this.handleOpenAlert();
+            }
+
+            if(invalidFil.length > 0){
+                this.handleOpenAlert(invalidFil);
+            }
+
+            e.preventDefault()
+            e.stopPropagation()
+            this.setState({ drag: false })
+            if (validFil && validFil.length > 0) {
+                this.props.handleDrop(validFil)
+                this.dragCounter = 0
             }
         }
     }
@@ -126,9 +132,16 @@ export default class DragAndDrop extends React.Component {
     fileUploadAction = () => this.inputReference.current.click();
     fileUploadInputChange = (e) => this.handleFileUpload(e);
 
-    handleOpenAlert = () => {
+    handleOpenAlert = (invalidFils) => {
+        var invalidFilsNames = [];
+
+        for (var i = 0; i < invalidFils.length; i++) {
+            invalidFilsNames.push(invalidFils[i].name);
+        }
+
         this.setState({
             isOpenAlert: true,
+            invalidNames: invalidFilsNames,
         });
     }
 
@@ -154,7 +167,7 @@ export default class DragAndDrop extends React.Component {
                     {this.props.children}
                 </div>
                 <div className="upload-section">
-                    <input type="file" hidden ref={this.inputReference} onChange={this.fileUploadInputChange} />
+                    <input type="file" hidden ref={this.inputReference} onChange={this.fileUploadInputChange} multiple="multiple"/>
                     <button className="upload-button" onClick={this.fileUploadAction}>
                         SUBIR ARCHIVO
                     </button>
@@ -162,8 +175,10 @@ export default class DragAndDrop extends React.Component {
                 <DialogAlert
                     open={this.state.isOpenAlert}
                     closeAction={this.handleClosingAlert}
-                    titulo={"Formato de Archivo no permitido"}
-                    mensaje={"Formatos Permitidos: CSV"}
+                    title={"Formato de Archivo no permitido"}
+                    titleContent={"Formatos permitidos: CSV"}
+                    subtitle={"Los siguientes archivos tienen un formato no permitido:"}
+                    contentList={this.state.invalidNames}
                     buttonText={"ACEPTAR"} />
             </div>
         )
